@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MojAbble - Systems Documentation</title>
+  <style>
+    :root {
+      --bg: #0c0f1a;
+      --bg2: #141829;
+      --bg3: #1c2038;
+      --surface: #232840;
+      --border: #2e3455;
+      --text: #c8cce0;
+      --text-dim: #6b7194;
+      --text-bright: #eef0ff;
+      --gold: #ffd700;
+      --gold-dim: #b89b00;
+      --orange: #ff8800;
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+      --red: #f87171;
+      --cyan: #22d3ee;
+      --pink: #f472b6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .hero {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1040 50%, #0a0e27 100%);
+      padding: 80px 40px 60px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 60% 40%, rgba(255,215,0,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(255,215,0,0.25);
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+    .hero .subtitle {
+      font-size: 15px;
+      color: var(--text-dim);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero .desc {
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    section {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    h2 .accent {
+      color: var(--gold);
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      margin: 32px 0 12px;
+    }
+
+    .section-desc {
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      font-size: 15px;
+    }
+
+    /* ── Diagrams ── */
+    .diagram-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .diagram-wrap svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .diagram-label {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      margin-top: 16px;
+      font-style: italic;
+    }
+
+    /* ── File cards ── */
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .file-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .file-card:hover {
+      border-color: var(--gold-dim);
+    }
+    .file-card .filename {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 14px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .file-card .filesize {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .file-card .filedesc {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .file-card .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-right: 4px;
+    }
+    .tag-logic { background: rgba(96,165,250,0.15); color: var(--blue); }
+    .tag-render { background: rgba(167,139,250,0.15); color: var(--purple); }
+    .tag-audio { background: rgba(244,114,182,0.15); color: var(--pink); }
+    .tag-data { background: rgba(74,222,128,0.15); color: var(--green); }
+    .tag-ui { background: rgba(255,215,0,0.15); color: var(--gold); }
+    .tag-ctrl { background: rgba(255,136,0,0.15); color: var(--orange); }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th {
+      background: var(--surface);
+      color: var(--text-bright);
+      font-weight: 700;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    code {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      background: var(--bg3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--cyan);
+    }
+
+    pre {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+      margin: 12px 0;
+    }
+
+    /* ── Score breakdown ── */
+    .score-formula {
+      background: linear-gradient(135deg, var(--surface), var(--bg3));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .score-formula .formula {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      margin-bottom: 12px;
+    }
+    .score-formula .explain {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* ── Effects list ── */
+    .effect-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .effect-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .effect-item .trigger {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--orange);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .effect-item .detail {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* ── Class cards ── */
+    .class-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 16px 0;
+    }
+    .class-card .class-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .class-card .class-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--purple);
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    .class-card .class-file {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .class-card .class-desc {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .class-card .methods {
+      columns: 2;
+      column-gap: 20px;
+      font-size: 13px;
+    }
+    .class-card .methods li {
+      list-style: none;
+      padding: 3px 0;
+      break-inside: avoid;
+    }
+    .class-card .methods li::before {
+      content: '\25B8 ';
+      color: var(--gold-dim);
+    }
+
+    /* ── Code Tabs ── */
+    .code-tabs {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .code-tabs .tab-bar {
+      display: flex;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .code-tabs .tab-btn {
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .code-tabs .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+    }
+    .code-tabs .tab-btn.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      background: rgba(255,215,0,0.05);
+    }
+    .code-tabs .tab-panel {
+      display: none;
+      padding: 0;
+    }
+    .code-tabs .tab-panel.active {
+      display: block;
+    }
+    .code-tabs .tab-panel pre {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    /* ── Changelog ── */
+    .changelog {
+      margin: 24px 0;
+    }
+    .changelog-entry {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 12px 0;
+    }
+    .changelog-entry .cl-date {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .changelog-entry ul {
+      padding-left: 18px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 2;
+    }
+    .changelog-entry ul li::marker {
+      color: var(--gold-dim);
+    }
+    .changelog-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .changelog-tag.new { background: rgba(74,222,128,0.15); color: var(--green); }
+    .changelog-tag.update { background: rgba(96,165,250,0.15); color: var(--blue); }
+    .changelog-tag.fix { background: rgba(248,113,113,0.15); color: var(--red); }
+
+    @media (max-width: 700px) {
+      .hero h1 { font-size: 36px; }
+      .file-grid { grid-template-columns: 1fr; }
+      .effect-grid { grid-template-columns: 1fr; }
+      .class-card .methods { columns: 1; }
+      .container { padding: 0 16px; }
+      .diagram-wrap { padding: 12px; }
+      .code-tabs .tab-btn { padding: 6px 12px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- HERO                                                               -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <h1>MojAbble</h1>
+  <div class="subtitle">Systems Documentation</div>
+  <p class="desc">
+    A browser-based word game fusing <strong>Mahjong Solitaire</strong> tile layouts
+    with <strong>Scrabble</strong> letter scoring. Uses the full <strong>SOWPODS / Collins Scrabble Words</strong>
+    tournament dictionary (267,627 words, 3+ letters, no length cap). Built with vanilla JS, Canvas 2D,
+    and the Web Audio API &mdash; zero external JS dependencies.
+  </p>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 1. ARCHITECTURE OVERVIEW                                           -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">01</span> Architecture Overview</h2>
+  <p class="section-desc">
+    Six files (five JS modules + one data file) plus a PHP leaderboard backend, one global namespace (<code>window.MojAbble</code>),
+    loaded via plain <code>&lt;script&gt;</code> tags in dependency order. Dictionary loaded async at boot.
+    Global high scores persisted server-side via flat JSON files.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 900 520" width="900" height="520" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Background -->
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="grad-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ffaa00"/></linearGradient>
+        <linearGradient id="grad-blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+        <linearGradient id="grad-purple" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+        <linearGradient id="grad-pink" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f472b6"/><stop offset="100%" stop-color="#ec4899"/></linearGradient>
+        <linearGradient id="grad-green" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></linearGradient>
+        <linearGradient id="grad-orange" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#f97316"/></linearGradient>
+      </defs>
+
+      <!-- index.html (top center) -->
+      <rect x="330" y="20" width="240" height="64" rx="10" fill="#232840" stroke="#ffd700" stroke-width="2"/>
+      <text x="450" y="47" text-anchor="middle" fill="#ffd700" font-size="16" font-weight="800">index.html</text>
+      <text x="450" y="67" text-anchor="middle" fill="#6b7194" font-size="11">HTML Shell + CSS + UI Overlay</text>
+
+      <!-- Script load arrows from HTML -->
+      <line x1="370" y1="84" x2="160" y2="150" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="410" y1="84" x2="340" y2="150" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="490" y1="84" x2="530" y2="150" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <line x1="530" y1="84" x2="710" y2="150" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="5,4"/>
+
+      <!-- main.js (center, large) -->
+      <rect x="300" y="145" width="260" height="80" rx="12" fill="#232840" stroke="url(#grad-orange)" stroke-width="2.5" filter="url(#glow)"/>
+      <text x="430" y="175" text-anchor="middle" fill="#fb923c" font-size="18" font-weight="800">main.js</text>
+      <text x="430" y="195" text-anchor="middle" fill="#6b7194" font-size="12">Game Controller</text>
+      <text x="430" y="210" text-anchor="middle" fill="#6b7194" font-size="11">State Machine &bull; Input &bull; Loop</text>
+
+      <!-- engine.js (left-center) -->
+      <rect x="60" y="145" width="200" height="80" rx="12" fill="#232840" stroke="url(#grad-blue)" stroke-width="2"/>
+      <text x="160" y="175" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="800">engine.js</text>
+      <text x="160" y="195" text-anchor="middle" fill="#6b7194" font-size="12">Game Logic Core</text>
+      <text x="160" y="210" text-anchor="middle" fill="#6b7194" font-size="11">Board &bull; Tiles &bull; Layout &bull; Score</text>
+
+      <!-- render.js (right-center) -->
+      <rect x="600" y="145" width="220" height="80" rx="12" fill="#232840" stroke="url(#grad-purple)" stroke-width="2"/>
+      <text x="710" y="175" text-anchor="middle" fill="#a78bfa" font-size="16" font-weight="800">render.js</text>
+      <text x="710" y="195" text-anchor="middle" fill="#6b7194" font-size="12">Visual Engine</text>
+      <text x="710" y="210" text-anchor="middle" fill="#6b7194" font-size="11">Canvas Renderer &bull; Particles &bull; FX</text>
+
+      <!-- words.js (bottom-left) -->
+      <rect x="80" y="300" width="180" height="70" rx="10" fill="#232840" stroke="url(#grad-green)" stroke-width="2"/>
+      <text x="170" y="328" text-anchor="middle" fill="#4ade80" font-size="15" font-weight="700">words.js + words.txt</text>
+      <text x="170" y="348" text-anchor="middle" fill="#6b7194" font-size="11">267K Dictionary &bull; Async Load &bull; Scoring</text>
+
+      <!-- audio.js (bottom-right) -->
+      <rect x="620" y="300" width="180" height="70" rx="10" fill="#232840" stroke="url(#grad-pink)" stroke-width="2"/>
+      <text x="710" y="328" text-anchor="middle" fill="#f472b6" font-size="15" font-weight="700">audio.js</text>
+      <text x="710" y="348" text-anchor="middle" fill="#6b7194" font-size="11">Procedural Web Audio API</text>
+
+      <!-- Dependency arrows -->
+      <!-- main.js → engine.js -->
+      <path d="M300,185 L265,185" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+      <!-- main.js → render.js -->
+      <path d="M560,185 L595,185" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrowPurple)"/>
+      <!-- main.js → audio.js -->
+      <path d="M540,225 L710,295" stroke="#f472b6" stroke-width="1.5" fill="none" marker-end="url(#arrowPink)"/>
+      <!-- engine.js → words.js -->
+      <path d="M160,225 L170,295" stroke="#4ade80" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+      <!-- main.js → words.js (direct validation call) -->
+      <path d="M340,225 L220,295" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="5,4" fill="none" marker-end="url(#arrowGreen)"/>
+
+      <!-- Arrow markers -->
+      <defs>
+        <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#60a5fa"/></marker>
+        <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#a78bfa"/></marker>
+        <marker id="arrowPink" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f472b6"/></marker>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#4ade80"/></marker>
+        <marker id="arrowGold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ffd700"/></marker>
+        <marker id="arrowWhite" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#6b7194"/></marker>
+      </defs>
+
+      <!-- Namespace box -->
+      <rect x="280" y="420" width="340" height="48" rx="8" fill="none" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="450" y="441" text-anchor="middle" fill="#6b7194" font-size="13">All modules export to</text>
+      <text x="450" y="458" text-anchor="middle" fill="#ffd700" font-size="14" font-weight="700" font-family="monospace">window.MojAbble</text>
+
+      <!-- Load order label -->
+      <text x="450" y="500" text-anchor="middle" fill="#3e4466" font-size="12">Script load order: words.js &rarr; engine.js &rarr; render.js &rarr; audio.js &rarr; main.js</text>
+    </svg>
+    <div class="diagram-label">Fig 1. Module architecture and dependency flow</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 2. FILE MAP                                                        -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">02</span> File Map</h2>
+  <p class="section-desc">Each file's role, contents, and size. Zero external dependencies.</p>
+
+  <div class="file-grid">
+    <div class="file-card">
+      <div class="filename">index.html</div>
+      <div class="filesize">~24 KB</div>
+      <div class="filedesc">
+        HTML shell with full-viewport canvas, UI overlay (score, combo, word area, word stats toast, buttons),
+        start screen with difficulty selector, player name input, global/local leaderboard tabs,
+        multiplayer screens (lobby, waiting, opponent bar, countdown, match result),
+        game-over screen, dictionary badge, and all CSS including
+        animations, difficulty selector styles, word stats panel, and mobile breakpoints.
+      </div>
+      <span class="tag tag-ui">UI</span>
+      <span class="tag tag-render">CSS</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">js/words.js</div>
+      <div class="filesize">~2.4 KB</div>
+      <div class="filedesc">
+        Dictionary loader with offensive-word filter. Fetches <code>words.txt</code>
+        (SOWPODS / Collins Scrabble Words competitive tournament dictionary, 267,627 words,
+        3+ letters, no length cap) at boot, hashes each word via FNV-1a, checks against a
+        57-entry blocked-hash <code>Set</code>, then builds the valid-word <code>Set</code>
+        for O(1) lookup. No plain-text slurs in source - only opaque 8-hex-char hashes.
+        Words with legitimate primary meanings (cock, ass, hell, damn) kept per Scrabble TWL convention.
+        Exports <code>WordValidator</code> with scoring methods and <code>loadDictionary()</code> (async).
+      </div>
+      <span class="tag tag-logic">LOGIC</span>
+      <span class="tag tag-data">DATA</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">words.txt</div>
+      <div class="filesize">~2.6 MB</div>
+      <div class="filedesc">
+        267,627 words from the <strong>SOWPODS / Collins Scrabble Words</strong> competitive tournament
+        dictionary. All words 3+ letters with no upper length cap. One word per line, sorted
+        alphabetically. This is the same dictionary used in international competitive Scrabble
+        (World Scrabble Championship, etc.).
+      </div>
+      <span class="tag tag-data">DATA</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">scores.php</div>
+      <div class="filesize">~4 KB</div>
+      <div class="filedesc">
+        Global leaderboard backend. Flat JSON file storage in <code>_scores/</code> directory
+        with flock-based concurrency. Two endpoints: <code>GET ?action=scores</code> returns
+        top 50 scores + rare words, <code>POST ?action=submit</code> saves a new score.
+        Rate-limited (5s per IP), input-validated, no database required.
+      </div>
+      <span class="tag tag-logic">BACKEND</span>
+      <span class="tag tag-data">DATA</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">room.php</div>
+      <div class="filesize">~6 KB</div>
+      <div class="filedesc">
+        Multiplayer room backend. Flat JSON file storage in <code>_rooms/</code> directory.
+        Five endpoints: <code>create</code> (new room + seed), <code>join</code> (enter room),
+        <code>poll</code> (opponent state), <code>update</code> (sync score),
+        <code>finish</code> (end match). 4-char room codes, 30-second countdown when
+        first player finishes, auto-cleanup of rooms older than 30 minutes.
+      </div>
+      <span class="tag tag-logic">BACKEND</span>
+      <span class="tag tag-data">DATA</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">js/engine.js</div>
+      <div class="filesize">~17 KB</div>
+      <div class="filedesc">
+        Core game state: <code>Board</code> (tile management, free-tile detection, difficulty-aware letter generation with seeded PRNG for multiplayer),
+        <code>Tile</code> (position, letter, animation state),
+        <code>Layouts</code> (pyramid definition), <code>ScoreManager</code> (combos, stats),
+        <code>mulberry32</code> (deterministic PRNG),
+        three difficulty-tuned letter bag distributions, and the shared constants object <code>C</code>.
+      </div>
+      <span class="tag tag-logic">LOGIC</span>
+      <span class="tag tag-data">STATE</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">js/render.js</div>
+      <div class="filesize">~18 KB</div>
+      <div class="filedesc">
+        Canvas 2D renderer with DPR-aware scaling, 3D-effect tile drawing,
+        <code>Particle</code> system, <code>ScorePopup</code> floaters,
+        <code>Effects</code> manager (screen shake, flash, bg pulse, ambient particles),
+        scrolling word-tiling background (offscreen canvas pre-render),
+        and easing functions.
+      </div>
+      <span class="tag tag-render">RENDER</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">js/audio.js</div>
+      <div class="filesize">~5.4 KB</div>
+      <div class="filedesc">
+        Procedural sound via Web Audio API. Seven distinct sounds:
+        tick, select (pitch-rising), deselect, word-success (chord arpeggio),
+        word-fail (buzz), combo (rising tone), celebration (ascending scale).
+        Lazy-inits <code>AudioContext</code> on first interaction.
+      </div>
+      <span class="tag tag-audio">AUDIO</span>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">js/main.js</div>
+      <div class="filesize">~24 KB</div>
+      <div class="filedesc">
+        Top-level <code>Game</code> controller: state machine
+        (menu/playing/gameover), <code>requestAnimationFrame</code> loop,
+        mouse + touch + keyboard input, difficulty selection, DOM UI sync,
+        word stats toast (rarity + dictionary API integration),
+        global/local leaderboard tabs, server score submission,
+        player name persistence, multiplayer room flow (create/join/poll/finish),
+        opponent score overlay, countdown, match result, and all juice orchestration.
+      </div>
+      <span class="tag tag-ctrl">CONTROLLER</span>
+      <span class="tag tag-ui">UI</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 3. GAME STATE MACHINE                                              -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">03</span> Game State Machine</h2>
+  <p class="section-desc">Three states, driven by the <code>Game.state</code> property in <code>main.js</code>.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 800 280" width="800" height="280" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- MENU state -->
+      <rect x="40" y="90" width="180" height="80" rx="40" fill="#232840" stroke="#60a5fa" stroke-width="2.5"/>
+      <text x="130" y="124" text-anchor="middle" fill="#60a5fa" font-size="20" font-weight="800">MENU</text>
+      <text x="130" y="148" text-anchor="middle" fill="#6b7194" font-size="11">Start screen visible</text>
+      <!-- Start dot -->
+      <circle cx="10" cy="130" r="6" fill="#60a5fa"/>
+      <line x1="16" y1="130" x2="38" y2="130" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+      <!-- PLAYING state -->
+      <rect x="310" y="90" width="180" height="80" rx="40" fill="#232840" stroke="#4ade80" stroke-width="2.5"/>
+      <text x="400" y="124" text-anchor="middle" fill="#4ade80" font-size="20" font-weight="800">PLAYING</text>
+      <text x="400" y="148" text-anchor="middle" fill="#6b7194" font-size="11">Game loop active</text>
+
+      <!-- GAMEOVER state -->
+      <rect x="580" y="90" width="180" height="80" rx="40" fill="#232840" stroke="#f87171" stroke-width="2.5"/>
+      <text x="670" y="124" text-anchor="middle" fill="#f87171" font-size="20" font-weight="800">GAMEOVER</text>
+      <text x="670" y="148" text-anchor="middle" fill="#6b7194" font-size="11">Stats overlay shown</text>
+
+      <!-- Transitions -->
+      <!-- Menu → Playing -->
+      <path d="M220,120 L305,120" stroke="#4ade80" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+      <text x="262" y="112" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="600">startGame()</text>
+
+      <!-- Playing → GameOver -->
+      <path d="M490,120 L575,120" stroke="#f87171" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+      <text x="532" y="112" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">no moves /</text>
+      <text x="532" y="126" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">board clear</text>
+
+      <!-- GameOver → Playing (restart) -->
+      <path d="M670,170 C670,240 400,240 400,170" stroke="#ffd700" stroke-width="2" fill="none" stroke-dasharray="5,4" marker-end="url(#arrowGold)"/>
+      <text x="535" y="232" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="600">Play Again</text>
+
+      <!-- Arrow markers -->
+      <defs>
+        <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f87171"/></marker>
+      </defs>
+    </svg>
+    <div class="diagram-label">Fig 2. Game state transitions</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 4. DATA FLOW                                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">04</span> Data Flow Pipeline</h2>
+  <p class="section-desc">From player click to screen pixels &mdash; the full action-response cycle.</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 860 540" width="860" height="540" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Player Input -->
+      <rect x="340" y="10" width="180" height="50" rx="25" fill="#ffd700" fill-opacity="0.15" stroke="#ffd700" stroke-width="2"/>
+      <text x="430" y="41" text-anchor="middle" fill="#ffd700" font-size="15" font-weight="800">Player Input</text>
+
+      <!-- Arrow down -->
+      <line x1="430" y1="60" x2="430" y2="85" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <!-- Input Handler -->
+      <rect x="320" y="90" width="220" height="44" rx="8" fill="#232840" stroke="#fb923c" stroke-width="1.5"/>
+      <text x="430" y="117" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="700">Input Handler (main.js)</text>
+      <text x="430" y="86" text-anchor="middle" fill="#6b7194" font-size="10">click / touch / keyboard</text>
+
+      <!-- Branch: Select or Submit -->
+      <line x1="370" y1="134" x2="200" y2="175" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+      <line x1="490" y1="134" x2="660" y2="175" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+      <text x="270" y="152" text-anchor="middle" fill="#6b7194" font-size="10">select tile</text>
+      <text x="590" y="152" text-anchor="middle" fill="#6b7194" font-size="10">submit word</text>
+
+      <!-- SELECT branch -->
+      <rect x="100" y="178" width="200" height="40" rx="8" fill="#232840" stroke="#60a5fa" stroke-width="1.5"/>
+      <text x="200" y="203" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="600">Board.selectTile()</text>
+
+      <line x1="200" y1="218" x2="200" y2="248" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="100" y="252" width="200" height="36" rx="8" fill="#232840" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="200" y="275" text-anchor="middle" fill="#a78bfa" font-size="12">Update word area DOM</text>
+
+      <line x1="200" y1="288" x2="200" y2="318" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="100" y="322" width="200" height="36" rx="8" fill="#232840" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="200" y="345" text-anchor="middle" fill="#f472b6" font-size="12">Audio.playSelect()</text>
+
+      <line x1="200" y1="358" x2="200" y2="388" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="100" y="392" width="200" height="36" rx="8" fill="#232840" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="200" y="415" text-anchor="middle" fill="#a78bfa" font-size="12">Effects.sparkleTile()</text>
+
+      <!-- SUBMIT branch -->
+      <rect x="560" y="178" width="200" height="40" rx="8" fill="#232840" stroke="#4ade80" stroke-width="1.5"/>
+      <text x="660" y="203" text-anchor="middle" fill="#4ade80" font-size="13" font-weight="600">WordValidator.isValid()</text>
+
+      <!-- Branch: valid / invalid -->
+      <line x1="610" y1="218" x2="530" y2="255" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+      <line x1="710" y1="218" x2="790" y2="255" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+      <text x="556" y="240" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="600">valid</text>
+      <text x="760" y="240" text-anchor="middle" fill="#f87171" font-size="10" font-weight="600">invalid</text>
+
+      <!-- Valid path -->
+      <rect x="430" y="258" width="200" height="36" rx="8" fill="#232840" stroke="#4ade80" stroke-width="1.5"/>
+      <text x="530" y="281" text-anchor="middle" fill="#4ade80" font-size="12">ScoreManager.submitWord()</text>
+
+      <line x1="530" y1="294" x2="530" y2="320" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="430" y="324" width="200" height="36" rx="8" fill="#232840" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="530" y="347" text-anchor="middle" fill="#a78bfa" font-size="12">Explode + Shake + Flash</text>
+
+      <line x1="530" y1="360" x2="530" y2="386" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="430" y="390" width="200" height="36" rx="8" fill="#232840" stroke="#60a5fa" stroke-width="1.5"/>
+      <text x="530" y="413" text-anchor="middle" fill="#60a5fa" font-size="12">Board.removeSelected()</text>
+
+      <line x1="530" y1="426" x2="530" y2="452" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="430" y="456" width="200" height="36" rx="8" fill="#232840" stroke="#fb923c" stroke-width="1.5"/>
+      <text x="530" y="479" text-anchor="middle" fill="#fb923c" font-size="12">Check game-over</text>
+
+      <!-- Invalid path -->
+      <rect x="700" y="258" width="140" height="36" rx="8" fill="#232840" stroke="#f87171" stroke-width="1.5"/>
+      <text x="770" y="281" text-anchor="middle" fill="#f87171" font-size="12">Shake + Buzz</text>
+
+      <line x1="770" y1="294" x2="770" y2="320" stroke="#6b7194" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+      <rect x="700" y="324" width="140" height="36" rx="8" fill="#232840" stroke="#f87171" stroke-width="1.5"/>
+      <text x="770" y="347" text-anchor="middle" fill="#f87171" font-size="12">Reset combo</text>
+
+      <!-- Render loop note -->
+      <rect x="20" y="460" width="260" height="60" rx="10" fill="none" stroke="#3e4466" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="150" y="485" text-anchor="middle" fill="#6b7194" font-size="12">Every frame (~60fps):</text>
+      <text x="150" y="502" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="600">Renderer.render(board, effects, dt)</text>
+    </svg>
+    <div class="diagram-label">Fig 3. Player action data flow &mdash; select tile (left) and submit word (right)</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 5. TILE LIFECYCLE                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">05</span> Tile Lifecycle</h2>
+  <p class="section-desc">
+    Every tile goes through a sequence of states from board initialization to removal.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 820 200" width="820" height="200" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- States -->
+      <rect x="10" y="60" width="120" height="56" rx="8" fill="#232840" stroke="#6b7194" stroke-width="1.5"/>
+      <text x="70" y="85" text-anchor="middle" fill="#6b7194" font-size="13" font-weight="700">BLOCKED</text>
+      <text x="70" y="102" text-anchor="middle" fill="#3e4466" font-size="10">Dimmed, no hover</text>
+
+      <rect x="175" y="60" width="120" height="56" rx="8" fill="#232840" stroke="#ffd700" stroke-width="2"/>
+      <text x="235" y="85" text-anchor="middle" fill="#ffd700" font-size="13" font-weight="700">FREE</text>
+      <text x="235" y="102" text-anchor="middle" fill="#3e4466" font-size="10">Pulsing glow</text>
+
+      <rect x="340" y="60" width="120" height="56" rx="8" fill="#232840" stroke="#60a5fa" stroke-width="2"/>
+      <text x="400" y="85" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">HOVERED</text>
+      <text x="400" y="102" text-anchor="middle" fill="#3e4466" font-size="10">Lifted + highlight</text>
+
+      <rect x="505" y="60" width="120" height="56" rx="8" fill="#232840" stroke="#ff8800" stroke-width="2"/>
+      <text x="565" y="85" text-anchor="middle" fill="#ff8800" font-size="13" font-weight="700">SELECTED</text>
+      <text x="565" y="102" text-anchor="middle" fill="#3e4466" font-size="10">Orange glow, float</text>
+
+      <rect x="670" y="60" width="130" height="56" rx="8" fill="#232840" stroke="#f87171" stroke-width="2"/>
+      <text x="735" y="85" text-anchor="middle" fill="#f87171" font-size="13" font-weight="700">REMOVING</text>
+      <text x="735" y="102" text-anchor="middle" fill="#3e4466" font-size="10">Scale up + fade</text>
+
+      <!-- Transitions -->
+      <path d="M130,88 L170,88" stroke="#ffd700" stroke-width="1.5" marker-end="url(#arrowGold)"/>
+      <path d="M170,88 L135,88" stroke="#6b7194" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrowWhite)"/>
+      <text x="150" y="78" text-anchor="middle" fill="#3e4466" font-size="9">neighbors removed</text>
+
+      <path d="M295,78 L335,78" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+      <path d="M335,98 L300,98" stroke="#6b7194" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="315" y="68" text-anchor="middle" fill="#3e4466" font-size="9">mouse enter</text>
+
+      <path d="M460,78 L500,78" stroke="#ff8800" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+      <path d="M500,98 L465,98" stroke="#6b7194" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="480" y="68" text-anchor="middle" fill="#3e4466" font-size="9">click</text>
+
+      <path d="M625,88 L665,88" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+      <text x="645" y="78" text-anchor="middle" fill="#3e4466" font-size="9">word valid</text>
+
+      <!-- Final -->
+      <text x="735" y="140" text-anchor="middle" fill="#3e4466" font-size="10">timer &ge; 1.0</text>
+      <line x1="735" y1="116" x2="735" y2="148" stroke="#6b7194" stroke-width="1" marker-end="url(#arrowWhite)"/>
+      <rect x="690" y="150" width="90" height="30" rx="6" fill="#1a1040" stroke="#3e4466" stroke-width="1"/>
+      <text x="735" y="170" text-anchor="middle" fill="#3e4466" font-size="11">REMOVED</text>
+
+      <defs>
+        <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ff8800"/></marker>
+      </defs>
+    </svg>
+    <div class="diagram-label">Fig 4. Tile state lifecycle (solid = forward, dashed = reversible)</div>
+  </div>
+
+  <h3>Free Tile Detection</h3>
+  <p>A tile is <strong>free</strong> when two conditions are met:</p>
+  <table>
+    <tr><th>Rule</th><th>Check</th><th>Meaning</th></tr>
+    <tr>
+      <td>No tile above</td>
+      <td><code>!tiles.some(t.layer === this.layer+1 && t.col === this.col && t.row === this.row)</code></td>
+      <td>Nothing stacked on top</td>
+    </tr>
+    <tr>
+      <td>At least one open side</td>
+      <td><code>!hasLeft || !hasRight</code></td>
+      <td>Left or right neighbor missing on same layer</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 6. BOARD LAYOUT                                                    -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">06</span> Board Layout &mdash; Classic Pyramid</h2>
+  <p class="section-desc">
+    76 tiles across 4 layers. The <code>Layouts.classic()</code> function returns
+    position arrays; adding new layouts is a single new function.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 750 420" width="750" height="420" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Grid labels -->
+      <text x="30" y="30" fill="#6b7194" font-size="12" font-weight="600">Layer 0 &mdash; 48 tiles (diamond)</text>
+
+      <!-- Layer 0 tiles -->
+      <g fill="#232840" stroke="#3e4466" stroke-width="1">
+        <!-- Row 0: cols 3-8 -->
+        <rect x="140" y="45" width="32" height="20" rx="3"/><rect x="176" y="45" width="32" height="20" rx="3"/>
+        <rect x="212" y="45" width="32" height="20" rx="3"/><rect x="248" y="45" width="32" height="20" rx="3"/>
+        <rect x="284" y="45" width="32" height="20" rx="3"/><rect x="320" y="45" width="32" height="20" rx="3"/>
+        <!-- Row 1: cols 2-9 -->
+        <rect x="104" y="69" width="32" height="20" rx="3"/><rect x="140" y="69" width="32" height="20" rx="3"/>
+        <rect x="176" y="69" width="32" height="20" rx="3"/><rect x="212" y="69" width="32" height="20" rx="3"/>
+        <rect x="248" y="69" width="32" height="20" rx="3"/><rect x="284" y="69" width="32" height="20" rx="3"/>
+        <rect x="320" y="69" width="32" height="20" rx="3"/><rect x="356" y="69" width="32" height="20" rx="3"/>
+        <!-- Row 2: cols 1-10 -->
+        <rect x="68" y="93" width="32" height="20" rx="3"/><rect x="104" y="93" width="32" height="20" rx="3"/>
+        <rect x="140" y="93" width="32" height="20" rx="3"/><rect x="176" y="93" width="32" height="20" rx="3"/>
+        <rect x="212" y="93" width="32" height="20" rx="3"/><rect x="248" y="93" width="32" height="20" rx="3"/>
+        <rect x="284" y="93" width="32" height="20" rx="3"/><rect x="320" y="93" width="32" height="20" rx="3"/>
+        <rect x="356" y="93" width="32" height="20" rx="3"/><rect x="392" y="93" width="32" height="20" rx="3"/>
+        <!-- Row 3: cols 1-10 -->
+        <rect x="68" y="117" width="32" height="20" rx="3"/><rect x="104" y="117" width="32" height="20" rx="3"/>
+        <rect x="140" y="117" width="32" height="20" rx="3"/><rect x="176" y="117" width="32" height="20" rx="3"/>
+        <rect x="212" y="117" width="32" height="20" rx="3"/><rect x="248" y="117" width="32" height="20" rx="3"/>
+        <rect x="284" y="117" width="32" height="20" rx="3"/><rect x="320" y="117" width="32" height="20" rx="3"/>
+        <rect x="356" y="117" width="32" height="20" rx="3"/><rect x="392" y="117" width="32" height="20" rx="3"/>
+        <!-- Row 4: cols 2-9 -->
+        <rect x="104" y="141" width="32" height="20" rx="3"/><rect x="140" y="141" width="32" height="20" rx="3"/>
+        <rect x="176" y="141" width="32" height="20" rx="3"/><rect x="212" y="141" width="32" height="20" rx="3"/>
+        <rect x="248" y="141" width="32" height="20" rx="3"/><rect x="284" y="141" width="32" height="20" rx="3"/>
+        <rect x="320" y="141" width="32" height="20" rx="3"/><rect x="356" y="141" width="32" height="20" rx="3"/>
+        <!-- Row 5: cols 3-8 -->
+        <rect x="140" y="165" width="32" height="20" rx="3"/><rect x="176" y="165" width="32" height="20" rx="3"/>
+        <rect x="212" y="165" width="32" height="20" rx="3"/><rect x="248" y="165" width="32" height="20" rx="3"/>
+        <rect x="284" y="165" width="32" height="20" rx="3"/><rect x="320" y="165" width="32" height="20" rx="3"/>
+      </g>
+
+      <!-- Layer 1 -->
+      <text x="500" y="30" fill="#60a5fa" font-size="12" font-weight="600">Layer 1 &mdash; 20 tiles</text>
+      <g fill="#2a3050" stroke="#60a5fa" stroke-width="1.2">
+        <!-- Row 1: cols 4-7 -->
+        <rect x="540" y="45" width="32" height="20" rx="3"/><rect x="576" y="45" width="32" height="20" rx="3"/>
+        <rect x="612" y="45" width="32" height="20" rx="3"/><rect x="648" y="45" width="32" height="20" rx="3"/>
+        <!-- Row 2: cols 3-8 -->
+        <rect x="504" y="69" width="32" height="20" rx="3"/><rect x="540" y="69" width="32" height="20" rx="3"/>
+        <rect x="576" y="69" width="32" height="20" rx="3"/><rect x="612" y="69" width="32" height="20" rx="3"/>
+        <rect x="648" y="69" width="32" height="20" rx="3"/><rect x="684" y="69" width="32" height="20" rx="3"/>
+        <!-- Row 3: cols 3-8 -->
+        <rect x="504" y="93" width="32" height="20" rx="3"/><rect x="540" y="93" width="32" height="20" rx="3"/>
+        <rect x="576" y="93" width="32" height="20" rx="3"/><rect x="612" y="93" width="32" height="20" rx="3"/>
+        <rect x="648" y="93" width="32" height="20" rx="3"/><rect x="684" y="93" width="32" height="20" rx="3"/>
+        <!-- Row 4: cols 4-7 -->
+        <rect x="540" y="117" width="32" height="20" rx="3"/><rect x="576" y="117" width="32" height="20" rx="3"/>
+        <rect x="612" y="117" width="32" height="20" rx="3"/><rect x="648" y="117" width="32" height="20" rx="3"/>
+      </g>
+
+      <!-- Layer 2 -->
+      <text x="500" y="170" fill="#a78bfa" font-size="12" font-weight="600">Layer 2 &mdash; 6 tiles</text>
+      <g fill="#302848" stroke="#a78bfa" stroke-width="1.2">
+        <rect x="576" y="185" width="32" height="20" rx="3"/><rect x="612" y="185" width="32" height="20" rx="3"/>
+        <rect x="540" y="209" width="32" height="20" rx="3"/><rect x="576" y="209" width="32" height="20" rx="3"/>
+        <rect x="612" y="209" width="32" height="20" rx="3"/><rect x="648" y="209" width="32" height="20" rx="3"/>
+      </g>
+
+      <!-- Layer 3 -->
+      <text x="500" y="260" fill="#ffd700" font-size="12" font-weight="600">Layer 3 &mdash; 2 tiles (peak)</text>
+      <g fill="#3a3020" stroke="#ffd700" stroke-width="1.5">
+        <rect x="576" y="275" width="32" height="20" rx="3"/><rect x="612" y="275" width="32" height="20" rx="3"/>
+      </g>
+
+      <!-- Stacking illustration -->
+      <text x="120" y="230" fill="#6b7194" font-size="12" font-weight="600">Stacked Side View</text>
+
+      <g transform="translate(100, 250)">
+        <!-- Layer 0 tiles -->
+        <rect x="0" y="90" width="40" height="28" rx="4" fill="#232840" stroke="#3e4466" stroke-width="1.5"/>
+        <rect x="44" y="90" width="40" height="28" rx="4" fill="#232840" stroke="#3e4466" stroke-width="1.5"/>
+        <rect x="88" y="90" width="40" height="28" rx="4" fill="#232840" stroke="#3e4466" stroke-width="1.5"/>
+        <rect x="132" y="90" width="40" height="28" rx="4" fill="#232840" stroke="#3e4466" stroke-width="1.5"/>
+        <rect x="176" y="90" width="40" height="28" rx="4" fill="#232840" stroke="#3e4466" stroke-width="1.5"/>
+        <text x="108" y="130" text-anchor="middle" fill="#3e4466" font-size="10">Layer 0</text>
+
+        <!-- Layer 1 -->
+        <rect x="44" y="58" width="40" height="28" rx="4" fill="#2a3050" stroke="#60a5fa" stroke-width="1.5"/>
+        <rect x="88" y="58" width="40" height="28" rx="4" fill="#2a3050" stroke="#60a5fa" stroke-width="1.5"/>
+        <rect x="132" y="58" width="40" height="28" rx="4" fill="#2a3050" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="108" y="53" text-anchor="middle" fill="#60a5fa" font-size="10">Layer 1</text>
+
+        <!-- Layer 2 -->
+        <rect x="88" y="26" width="40" height="28" rx="4" fill="#302848" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="108" y="21" text-anchor="middle" fill="#a78bfa" font-size="10">Layer 2</text>
+
+        <!-- Layer 3 -->
+        <rect x="88" y="-6" width="40" height="28" rx="4" fill="#3a3020" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="108" y="-11" text-anchor="middle" fill="#ffd700" font-size="10">Layer 3</text>
+
+        <!-- Offset annotations -->
+        <line x1="240" y1="104" x2="260" y2="104" stroke="#3e4466" stroke-width="1"/>
+        <line x1="240" y1="72" x2="260" y2="72" stroke="#3e4466" stroke-width="1"/>
+        <line x1="250" y1="104" x2="250" y2="72" stroke="#3e4466" stroke-width="1"/>
+        <text x="268" y="92" fill="#3e4466" font-size="10">LAYER_DY</text>
+        <text x="268" y="102" fill="#3e4466" font-size="10">= 6px</text>
+      </g>
+    </svg>
+    <div class="diagram-label">Fig 5. Classic pyramid layout &mdash; top-down per layer (left) and stacking cross-section (bottom)</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 7. SCORING SYSTEM                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">07</span> Scoring System</h2>
+  <p class="section-desc">Scrabble letter values, length bonuses, and a combo multiplier that rewards consecutive valid words.</p>
+
+  <div class="score-formula">
+    <div class="formula">Total = (BaseScore + LengthBonus) &times; ComboMultiplier</div>
+    <div class="explain">
+      BaseScore = sum of letter point values &nbsp;|&nbsp;
+      LengthBonus = bonus for words &ge; 4 letters &nbsp;|&nbsp;
+      ComboMultiplier = consecutive valid words within 8s
+    </div>
+  </div>
+
+  <h3>Letter Values</h3>
+  <table>
+    <tr>
+      <th>1 pt</th><th>2 pt</th><th>3 pt</th><th>4 pt</th><th>5 pt</th><th>8 pt</th><th>10 pt</th>
+    </tr>
+    <tr>
+      <td>A E I L N O R S T U</td>
+      <td>D G</td>
+      <td>B C M P</td>
+      <td>F H V W Y</td>
+      <td>K</td>
+      <td>J X</td>
+      <td>Q Z</td>
+    </tr>
+  </table>
+
+  <h3>Length Bonuses</h3>
+  <table>
+    <tr><th>Word Length</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9+</th></tr>
+    <tr><td><strong>Bonus</strong></td><td>0</td><td>+5</td><td>+15</td><td>+30</td><td>+50</td><td>+80</td><td>+80 + 40&times;(n&minus;8)</td></tr>
+  </table>
+
+  <h3>Combo System</h3>
+  <table>
+    <tr><th>Property</th><th>Detail</th></tr>
+    <tr><td>Window</td><td>8 seconds between valid words to maintain combo</td></tr>
+    <tr><td>Multiplier</td><td>Equal to combo count (1x, 2x, 3x, ...)</td></tr>
+    <tr><td>Reset</td><td>On invalid word submission or timeout</td></tr>
+    <tr><td>Board clear bonus</td><td>+500 flat points</td></tr>
+  </table>
+
+  <h3>Stuck Mechanics</h3>
+  <p>Three escape valves prevent dead-end boards, each with a strategic cost:</p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 800 220" width="800" height="220" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Shuffle -->
+      <rect x="20" y="20" width="230" height="170" rx="12" fill="#232840" stroke="#6666ff" stroke-width="2"/>
+      <text x="135" y="52" text-anchor="middle" fill="#8888ff" font-size="18" font-weight="800">SHUFFLE</text>
+      <text x="135" y="74" text-anchor="middle" fill="#6b7194" font-size="12">Redistribute ALL tile letters</text>
+      <line x1="50" y1="88" x2="220" y2="88" stroke="#2e3455" stroke-width="1"/>
+      <text x="135" y="110" text-anchor="middle" fill="#f87171" font-size="14" font-weight="700">&minus;50 points</text>
+      <text x="135" y="130" text-anchor="middle" fill="#6b7194" font-size="11">Combo resets to 0</text>
+      <text x="135" y="150" text-anchor="middle" fill="#6b7194" font-size="11">Session letter pool preserved</text>
+      <text x="135" y="172" text-anchor="middle" fill="#3e4466" font-size="11">Board.shuffleFreeLetters()</text>
+
+      <!-- Swap -->
+      <rect x="285" y="20" width="230" height="170" rx="12" fill="#232840" stroke="#ffaa00" stroke-width="2"/>
+      <text x="400" y="52" text-anchor="middle" fill="#ffcc44" font-size="18" font-weight="800">SWAP</text>
+      <text x="400" y="74" text-anchor="middle" fill="#6b7194" font-size="12">Replace selected tile letters</text>
+      <line x1="315" y1="88" x2="485" y2="88" stroke="#2e3455" stroke-width="1"/>
+      <text x="400" y="110" text-anchor="middle" fill="#f87171" font-size="14" font-weight="700">&minus;25 points &times; tile count</text>
+      <text x="400" y="130" text-anchor="middle" fill="#6b7194" font-size="11">Combo resets to 0</text>
+      <text x="400" y="150" text-anchor="middle" fill="#6b7194" font-size="11">New letters from weighted pool</text>
+      <text x="400" y="172" text-anchor="middle" fill="#3e4466" font-size="11">Board.swapSelectedLetters()</text>
+
+      <!-- Give Up -->
+      <rect x="550" y="20" width="230" height="170" rx="12" fill="#232840" stroke="#f87171" stroke-width="2"/>
+      <text x="665" y="52" text-anchor="middle" fill="#f87171" font-size="18" font-weight="800">GIVE UP</text>
+      <text x="665" y="74" text-anchor="middle" fill="#6b7194" font-size="12">End the game voluntarily</text>
+      <line x1="580" y1="88" x2="750" y2="88" stroke="#2e3455" stroke-width="1"/>
+      <text x="665" y="110" text-anchor="middle" fill="#6b7194" font-size="14">No point penalty</text>
+      <text x="665" y="130" text-anchor="middle" fill="#6b7194" font-size="11">Triggers game-over screen</text>
+      <text x="665" y="150" text-anchor="middle" fill="#6b7194" font-size="11">Final score preserved</text>
+      <text x="665" y="172" text-anchor="middle" fill="#3e4466" font-size="11">Game._gameOver()</text>
+    </svg>
+    <div class="diagram-label">Fig 5b. Three stuck-escape mechanics and their costs</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 8. LETTER BAG DESIGN                                               -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">08</span> Letter Bag Design</h2>
+  <p class="section-desc">
+    Three difficulty-tuned letter pools govern tile generation, each designed around English letter frequency, digraph availability, and word-formation probability for a 68-tile board.
+  </p>
+
+  <h3>Design Principles</h3>
+  <p>
+    The letter bag is the single most important factor in whether a board feels playable. Three constraints guide every distribution:
+  </p>
+  <table>
+    <tr><th>Constraint</th><th>Why It Matters</th></tr>
+    <tr>
+      <td><strong>Vowel floor</strong></td>
+      <td>English words average ~40% vowels. Below 25%, most 3-letter words become impossible. Each difficulty sets a minimum vowel ratio enforced after sampling.</td>
+    </tr>
+    <tr>
+      <td><strong>Digraph coverage</strong></td>
+      <td>The top English bigrams (TH, HE, IN, ER, AN, RE, ON, AT, EN, ST) must be statistically likely. If any letter in a common pair is absent or rare, word options collapse.</td>
+    </tr>
+    <tr>
+      <td><strong>Frustration letter budget</strong></td>
+      <td>Letters like Q, X, Z, J score high but pair with very few others. Too many of these create boards where points exist on paper but no valid words can form.</td>
+    </tr>
+  </table>
+
+  <h3>The Three Bags</h3>
+  <table>
+    <tr>
+      <th>Letter</th>
+      <th>Pts</th>
+      <th style="color:#4ade80">Easy</th>
+      <th style="color:#ffd700">Normal</th>
+      <th style="color:#f87171">Hard</th>
+      <th>English %</th>
+    </tr>
+    <tr><td>A</td><td>1</td><td>9</td><td>8</td><td>5</td><td>8.2%</td></tr>
+    <tr><td>B</td><td>3</td><td>1</td><td>2</td><td>2</td><td>1.5%</td></tr>
+    <tr><td>C</td><td>3</td><td>2</td><td>2</td><td>3</td><td>2.8%</td></tr>
+    <tr><td>D</td><td>2</td><td>4</td><td>3</td><td>3</td><td>4.3%</td></tr>
+    <tr><td>E</td><td>1</td><td>12</td><td>11</td><td>7</td><td>12.7%</td></tr>
+    <tr><td>F</td><td>4</td><td>1</td><td>2</td><td>3</td><td>2.2%</td></tr>
+    <tr><td>G</td><td>2</td><td>2</td><td>3</td><td>3</td><td>2.0%</td></tr>
+    <tr><td>H</td><td>4</td><td>3</td><td>2</td><td>3</td><td>6.1%</td></tr>
+    <tr><td>I</td><td>1</td><td>8</td><td>8</td><td>5</td><td>7.0%</td></tr>
+    <tr><td>J</td><td>8</td><td style="color:#4ade80">0</td><td>1</td><td style="color:#f87171">2</td><td>0.2%</td></tr>
+    <tr><td>K</td><td>5</td><td style="color:#4ade80">0</td><td>1</td><td style="color:#f87171">2</td><td>0.8%</td></tr>
+    <tr><td>L</td><td>1</td><td>5</td><td>4</td><td>3</td><td>4.0%</td></tr>
+    <tr><td>M</td><td>3</td><td>2</td><td>2</td><td>3</td><td>2.4%</td></tr>
+    <tr><td>N</td><td>1</td><td>6</td><td>5</td><td>4</td><td>6.7%</td></tr>
+    <tr><td>O</td><td>1</td><td>8</td><td>7</td><td>5</td><td>7.5%</td></tr>
+    <tr><td>P</td><td>3</td><td>2</td><td>2</td><td>3</td><td>1.9%</td></tr>
+    <tr><td>Q</td><td>10</td><td style="color:#4ade80">0</td><td>1</td><td>1</td><td>0.1%</td></tr>
+    <tr><td>R</td><td>1</td><td>6</td><td>5</td><td>4</td><td>6.0%</td></tr>
+    <tr><td>S</td><td>1</td><td>6</td><td>4</td><td>3</td><td>6.3%</td></tr>
+    <tr><td>T</td><td>1</td><td>6</td><td>5</td><td>4</td><td>9.1%</td></tr>
+    <tr><td>U</td><td>1</td><td>4</td><td>4</td><td>3</td><td>2.8%</td></tr>
+    <tr><td>V</td><td>4</td><td style="color:#4ade80">0</td><td>2</td><td style="color:#f87171">3</td><td>1.0%</td></tr>
+    <tr><td>W</td><td>4</td><td>1</td><td>2</td><td style="color:#f87171">3</td><td>2.4%</td></tr>
+    <tr><td>X</td><td>8</td><td style="color:#4ade80">0</td><td>1</td><td style="color:#f87171">2</td><td>0.2%</td></tr>
+    <tr><td>Y</td><td>4</td><td>2</td><td>2</td><td>3</td><td>2.0%</td></tr>
+    <tr><td>Z</td><td>10</td><td style="color:#4ade80">0</td><td>1</td><td style="color:#f87171">2</td><td>0.1%</td></tr>
+    <tr style="border-top:2px solid var(--border)">
+      <td colspan="2"><strong>Pool size</strong></td>
+      <td><strong>90</strong></td>
+      <td><strong>90</strong></td>
+      <td><strong>84</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>Vowel %</strong></td>
+      <td style="color:#4ade80"><strong>46%</strong></td>
+      <td style="color:#ffd700"><strong>42%</strong></td>
+      <td style="color:#f87171"><strong>30%</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>Vowel floor</strong></td>
+      <td style="color:#4ade80"><strong>40%</strong></td>
+      <td style="color:#ffd700"><strong>35%</strong></td>
+      <td style="color:#f87171"><strong>25%</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td colspan="2"><strong>Frustration letters</strong></td>
+      <td style="color:#4ade80"><strong>0</strong></td>
+      <td><strong>5</strong></td>
+      <td style="color:#f87171"><strong>14</strong></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <h3>Difficulty Profiles</h3>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 800 280" width="800" height="280" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Easy -->
+      <rect x="20" y="20" width="240" height="240" rx="12" fill="#232840" stroke="#4ade80" stroke-width="2"/>
+      <text x="140" y="50" text-anchor="middle" fill="#4ade80" font-size="20" font-weight="800">EASY</text>
+      <line x1="50" y1="62" x2="230" y2="62" stroke="#2e3455" stroke-width="1"/>
+      <text x="140" y="82" text-anchor="middle" fill="#c8cce0" font-size="12" font-weight="600">18 of 26 letters used</text>
+      <text x="140" y="102" text-anchor="middle" fill="#6b7194" font-size="11">No J, K, Q, V, X, Z</text>
+      <text x="140" y="122" text-anchor="middle" fill="#6b7194" font-size="11">46% vowels in pool</text>
+      <text x="140" y="142" text-anchor="middle" fill="#6b7194" font-size="11">40% vowel floor enforced</text>
+      <line x1="50" y1="156" x2="230" y2="156" stroke="#2e3455" stroke-width="1"/>
+      <text x="140" y="176" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="600">All top-10 digraphs covered:</text>
+      <text x="140" y="194" text-anchor="middle" fill="#6b7194" font-size="11">TH HE IN ER AN RE ON AT EN ST</text>
+      <text x="140" y="218" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="600">Expected playable words:</text>
+      <text x="140" y="236" text-anchor="middle" fill="#c8cce0" font-size="14" font-weight="700">Very High</text>
+
+      <!-- Normal -->
+      <rect x="280" y="20" width="240" height="240" rx="12" fill="#232840" stroke="#ffd700" stroke-width="2"/>
+      <text x="400" y="50" text-anchor="middle" fill="#ffd700" font-size="20" font-weight="800">NORMAL</text>
+      <line x1="310" y1="62" x2="490" y2="62" stroke="#2e3455" stroke-width="1"/>
+      <text x="400" y="82" text-anchor="middle" fill="#c8cce0" font-size="12" font-weight="600">All 26 letters present</text>
+      <text x="400" y="102" text-anchor="middle" fill="#6b7194" font-size="11">Scrabble-weighted distribution</text>
+      <text x="400" y="122" text-anchor="middle" fill="#6b7194" font-size="11">42% vowels in pool</text>
+      <text x="400" y="142" text-anchor="middle" fill="#6b7194" font-size="11">35% vowel floor enforced</text>
+      <line x1="310" y1="156" x2="490" y2="156" stroke="#2e3455" stroke-width="1"/>
+      <text x="400" y="176" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="600">~5 frustration letters per board</text>
+      <text x="400" y="194" text-anchor="middle" fill="#6b7194" font-size="11">Occasional J, Q, X, Z force creativity</text>
+      <text x="400" y="218" text-anchor="middle" fill="#ffd700" font-size="11" font-weight="600">Expected playable words:</text>
+      <text x="400" y="236" text-anchor="middle" fill="#c8cce0" font-size="14" font-weight="700">Moderate</text>
+
+      <!-- Hard -->
+      <rect x="540" y="20" width="240" height="240" rx="12" fill="#232840" stroke="#f87171" stroke-width="2"/>
+      <text x="660" y="50" text-anchor="middle" fill="#f87171" font-size="20" font-weight="800">HARD</text>
+      <line x1="570" y1="62" x2="750" y2="62" stroke="#2e3455" stroke-width="1"/>
+      <text x="660" y="82" text-anchor="middle" fill="#c8cce0" font-size="12" font-weight="600">All 26, flatter distribution</text>
+      <text x="660" y="102" text-anchor="middle" fill="#6b7194" font-size="11">Rare letters at 2-3x normal rate</text>
+      <text x="660" y="122" text-anchor="middle" fill="#6b7194" font-size="11">30% vowels in pool</text>
+      <text x="660" y="142" text-anchor="middle" fill="#6b7194" font-size="11">25% vowel floor enforced</text>
+      <line x1="570" y1="156" x2="750" y2="156" stroke="#2e3455" stroke-width="1"/>
+      <text x="660" y="176" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">~14 frustration letters per board</text>
+      <text x="660" y="194" text-anchor="middle" fill="#6b7194" font-size="11">J:2 K:2 V:3 W:3 X:2 Z:2</text>
+      <text x="660" y="218" text-anchor="middle" fill="#f87171" font-size="11" font-weight="600">Expected playable words:</text>
+      <text x="660" y="236" text-anchor="middle" fill="#c8cce0" font-size="14" font-weight="700">Low - Expert Only</text>
+    </svg>
+    <div class="diagram-label">Fig 6. Three difficulty bags and their statistical profiles</div>
+  </div>
+
+  <h3>Shuffle Mechanics</h3>
+  <p>
+    Shuffle redistributes letters across <strong>all remaining tiles</strong> (not just free ones), preserving the session's letter pool exactly. This is critical: the 68 letters drawn at game start are the only letters for the entire session. Shuffle changes <em>where</em> letters sit, not <em>which</em> letters exist.
+  </p>
+  <p>
+    Free tiles receive an animated flip effect (spiraling outward from center). Blocked tiles change silently underneath. This means a shuffle can surface previously buried vowels or push frustration letters deeper into the stack - it is genuinely strategic, not just cosmetic.
+  </p>
+
+  <h3>Sampling &amp; Validation</h3>
+  <p>
+    Letters are drawn without replacement from the difficulty pool until the pool is exhausted, then it refills. For a 68-tile board from a 90-tile pool, ~76% of the pool is used per pass, meaning letter ratios closely track pool weights.
+  </p>
+  <p>
+    After sampling, a vowel floor check runs: if the vowel count falls below the difficulty minimum (40%/35%/25%), random consonants are replaced with weighted vowels (E > A > I > O > U bias) until the floor is met. This prevents unplayable consonant-heavy boards while keeping each difficulty's character intact.
+  </p>
+
+  <h3>Why These Numbers</h3>
+  <table>
+    <tr><th>Decision</th><th>Reasoning</th></tr>
+    <tr>
+      <td>Easy removes 8 letters entirely</td>
+      <td>Players should never see Q, X, Z, J, K, V. These letters have very few valid pairings (Q needs U, X/Z/J need specific vowel positions). Removing them guarantees every tile contributes to possible words.</td>
+    </tr>
+    <tr>
+      <td>Easy has 6 S tiles</td>
+      <td>S is the most versatile consonant in English - it pluralizes nearly any noun, conjugates most verbs, and appears in common clusters (SH, ST, SP, SN, SC, SK, SL, SM, SW). Extra S tiles create the most word options per tile.</td>
+    </tr>
+    <tr>
+      <td>Normal mirrors Scrabble</td>
+      <td>70+ years of competitive play have validated these ratios. The one-each of J, Q, X, Z creates tension without frustration. This is the baseline players expect from word games.</td>
+    </tr>
+    <tr>
+      <td>Hard doubles frustration letters</td>
+      <td>At 2x Scrabble rate, hard boards average ~14 difficult tiles out of 68 (21%). Players must know words like VEX, JINX, QUIZ, WAX, ZAP. The 25% vowel floor ensures at least 17 vowels exist, enough for ~5 three-letter words even in worst case.</td>
+    </tr>
+    <tr>
+      <td>Pool sizes differ (90/90/84)</td>
+      <td>Hard's flatter distribution uses fewer total tiles in its pool, meaning the 68-tile sample covers 81% of the pool (vs 76% for Easy/Normal). This makes Hard boards more predictable in letter balance - the challenge comes from <em>which</em> letters, not from random spikes.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 9. CONTENT MODERATION                                              -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">09</span> Content Moderation</h2>
+  <p class="section-desc">
+    MojAbble filters offensive words from the dictionary at load time using a hashed blocklist.
+    The source code never contains readable slurs - only opaque FNV-1a hashes.
+  </p>
+
+  <h3>Why Hashing</h3>
+  <p>
+    Storing a plain-text list of slurs in source creates problems: it shows up in code search,
+    triggers CI profanity scanners, and makes the repo itself carry offensive content. Hashing
+    avoids all of this. The approach matches industry practice used by GitHub, Discord, and
+    commercial word games - blocked terms are stored as irreversible hashes so source code
+    stays clean while filtering remains effective.
+  </p>
+
+  <h3>The FNV-1a Hash</h3>
+  <p>
+    FNV-1a (Fowler-Noll-Vo, variant 1a) is a fast, non-cryptographic hash function. For each
+    input string it produces a 32-bit integer, displayed as an 8-character hex string
+    (e.g., <code>a4705559</code>). Across the 57 blocked words, there are zero collisions -
+    every word maps to a unique hash. The function runs in O(n) time where n is word length,
+    adding negligible overhead to dictionary loading.
+  </p>
+  <div class="code-tabs" data-tabs>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="fnv-hash">FNV-1a Hash</button>
+      <button class="tab-btn" data-tab="fnv-usage">Usage in Loader</button>
+    </div>
+    <div class="tab-panel active" data-panel="fnv-hash">
+      <pre>function _fnv1a(s) {
+  let h = 0x811c9dc5;          // FNV offset basis
+  for (let i = 0; i &lt; s.length; i++) {
+    h ^= s.charCodeAt(i);     // XOR with byte
+    h = Math.imul(h, 0x01000193); // multiply by FNV prime
+  }
+  return (h &gt;&gt;&gt; 0).toString(16).padStart(8, '0');
+}</pre>
+    </div>
+    <div class="tab-panel" data-panel="fnv-usage">
+      <pre>// words.js - loadDictionary()
+const words = text.split(/\r?\n/)
+  .filter(w => w.length >= 3 && !_isBlocked(w));
+VALID_WORDS = new Set(words);   // 267,627 words, O(1) lookup
+
+function _isBlocked(word) {
+  return _BLOCKED.has(_fnv1a(word));
+  // _BLOCKED = Set of 57 hex strings (no plaintext slurs)
+}</pre>
+    </div>
+  </div>
+
+  <h3>Filtering Pipeline</h3>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td>1. Fetch</td>
+      <td><code>words.txt</code> loaded via <code>fetch()</code> - 267,627 words (SOWPODS/Collins), one per line</td>
+    </tr>
+    <tr>
+      <td>2. Split</td>
+      <td>Text split on newlines, filtered to words with <code>length &ge; 3</code></td>
+    </tr>
+    <tr>
+      <td>3. Hash check</td>
+      <td>Each word passed through <code>_fnv1a()</code>, result checked against <code>_BLOCKED</code> Set (57 hex strings)</td>
+    </tr>
+    <tr>
+      <td>4. Build Set</td>
+      <td>Surviving words added to <code>VALID_WORDS</code> Set for O(1) lookup during play</td>
+    </tr>
+  </table>
+
+  <h3>Policy Decisions</h3>
+  <table>
+    <tr><th>Category</th><th>Decision</th><th>Reasoning</th></tr>
+    <tr>
+      <td><strong>Blocked</strong></td>
+      <td>Racial/ethnic slurs, orientation slurs, ableist slurs, strong profanity</td>
+      <td>No legitimate word-game context. Players should never see these on the board or in valid-word feedback.</td>
+    </tr>
+    <tr>
+      <td><strong>Kept</strong></td>
+      <td>Words with legitimate primary meanings (cock, ass, hell, damn)</td>
+      <td>These are standard Scrabble TWL entries with non-offensive primary definitions (a rooster, a donkey, a theological concept, a verb). Blocking them would surprise word-game players and reduce valid plays.</td>
+    </tr>
+  </table>
+
+  <h3>Adding New Blocked Words</h3>
+  <p>
+    To block a new word: compute its FNV-1a hash (run <code>_fnv1a('word')</code> in a browser console),
+    then add the resulting 8-character hex string to the <code>_BLOCKED</code> Set in <code>words.js</code>.
+    No other changes needed - the filtering pipeline picks it up automatically on next dictionary load.
+  </p>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 10. SCOREBOARDS & PERSISTENCE                                      -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">10</span> Scoreboards &amp; Persistence</h2>
+  <p class="section-desc">
+    Two-tier leaderboard system: a <strong>global server-side</strong> leaderboard shared by all visitors
+    and a <strong>local localStorage</strong> leaderboard for personal records. Both track top scores and rarest words.
+    Players enter a name (persisted in localStorage) that appears on the global board.
+  </p>
+
+  <h3>Global Leaderboard (Server)</h3>
+  <p>
+    Powered by <code>scores.php</code>, a single-file PHP backend using flat JSON storage
+    in a <code>_scores/</code> directory. No database, no accounts. Score submission happens
+    automatically on game over; the global board is fetched on page load and after each game.
+  </p>
+  <table>
+    <tr><th>Endpoint</th><th>Method</th><th>Purpose</th><th>Max Entries</th></tr>
+    <tr>
+      <td><code>?action=scores</code></td>
+      <td>GET</td>
+      <td>Returns top scores + rarest words</td>
+      <td>50 each</td>
+    </tr>
+    <tr>
+      <td><code>?action=submit</code></td>
+      <td>POST</td>
+      <td>Submits a new score + optional rare word</td>
+      <td>-</td>
+    </tr>
+  </table>
+  <p>
+    Protections: rate limiting (1 submission per 5 seconds per IP), score range validation
+    (1 - 999,999), name sanitization (alphanumeric, max 16 chars), flock-based file concurrency.
+    The server is best-effort - if unreachable, the game functions normally with local scores only.
+  </p>
+
+  <h3>Local Leaderboard (localStorage)</h3>
+  <table>
+    <tr><th>Key</th><th>Contents</th><th>Max Entries</th></tr>
+    <tr>
+      <td><code>mojabble_scores</code></td>
+      <td>Top 10 personal scores, sorted descending</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td><code>mojabble_rare</code></td>
+      <td>Top 10 personal rarest words, sorted descending</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td><code>mojabble_name</code></td>
+      <td>Player name string (persisted for server submissions)</td>
+      <td>1</td>
+    </tr>
+  </table>
+
+  <h3>Board Tab UI</h3>
+  <p>
+    Both the start screen and game-over screen show a <strong>Global / Local</strong> tab switcher
+    above the scoreboards. Global is the default view. Tabs swap which dataset renders
+    into the existing score and rare-word lists.
+  </p>
+
+  <h3>Data Structures</h3>
+  <p>Server and local entries share a similar shape. Select a tab to view each format:</p>
+  <div class="code-tabs" data-tabs>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="score-entry">Score Entry</button>
+      <button class="tab-btn" data-tab="rare-entry">Rare Word Entry</button>
+      <button class="tab-btn" data-tab="server-api">Server API</button>
+    </div>
+    <div class="tab-panel active" data-panel="score-entry">
+      <pre>// mojabble_scores entry (localStorage + server)
+{
+  n:   "Player",       // player name
+  s:   1250,           // final score (rounded)
+  w:   14,             // words found
+  bw:  "QUARTZ",       // best word (uppercase)
+  bws: 82,             // best word score
+  mc:  5,              // max combo reached
+  d:   "normal",       // difficulty
+  dt:  "2026-05-19",   // date string
+  ts:  1716134400      // unix timestamp (server only)
+}</pre>
+    </div>
+    <div class="tab-panel" data-panel="rare-entry">
+      <pre>// mojabble_rare entry (localStorage + server)
+{
+  w:   "QUARTZ",       // word (uppercase)
+  r:   82,             // rarity score (baseScore + lengthBonus)
+  n:   "Player",       // who found it (server only)
+  d:   "normal",       // difficulty
+  dt:  "2026-05-19"    // date string
+}</pre>
+    </div>
+    <div class="tab-panel" data-panel="server-api">
+      <pre>// GET scores.php?action=scores
+// Response:
+{
+  scores: [ ... ],     // top 50 score entries
+  rare:   [ ... ]      // top 50 rare word entries
+}
+
+// POST scores.php?action=submit
+// Request body:
+{
+  n:  "Player",        // player name (max 16 chars)
+  s:  1250,            // score (1 - 999,999)
+  w:  14,              // words found (1 - 500)
+  bw: "QUARTZ",        // best word
+  bws: 82,             // best word score
+  mc: 5,               // max combo (0 - 200)
+  d:  "normal",        // difficulty (easy|normal|hard)
+  rw: "QUIXOTIC",      // session's rarest word (optional)
+  rr: 85               // rarest word score (optional)
+}
+// Response: { ok: true, rank: 3 }</pre>
+    </div>
+  </div>
+
+  <h3>Rarity Scoring</h3>
+  <p>
+    A word's rarity score is <code>baseScore + lengthBonus</code> (before combo multiplier).
+    This means rarity reflects intrinsic word difficulty - rare letters and long words -
+    not streak bonuses. The rarest words list only stores unique words; submitting the same
+    word twice does not create a duplicate entry. The session's best rare word is submitted
+    to the server along with the final score.
+  </p>
+
+  <h3>Word Stats Toast</h3>
+  <p>
+    After every valid word, a toast panel slides in showing three pieces of information:
+  </p>
+  <table>
+    <tr><th>Element</th><th>Content</th></tr>
+    <tr>
+      <td><strong>Rarity rating</strong></td>
+      <td>Star-based tier: COMMON (&lt;8), UNCOMMON (8+), RARE (16+), EPIC (29+), LEGENDARY (51+)</td>
+    </tr>
+    <tr>
+      <td><strong>Score breakdown</strong></td>
+      <td><code>+baseScore +lengthBonus &times;combo = total</code></td>
+    </tr>
+    <tr>
+      <td><strong>Definition/etymology</strong></td>
+      <td>Fetched async from Free Dictionary API (<code>dictionaryapi.dev</code>). Falls back to letter stats (length, vowel %, unique letters) if API fails or word not found.</td>
+    </tr>
+  </table>
+  <p>
+    The toast auto-dismisses after 6 seconds. Each new word submission cancels the previous timer
+    and replaces the toast content immediately.
+  </p>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 11. EFFECTS / JUICE PIPELINE                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">11</span> Effects &amp; Juice Pipeline</h2>
+  <p class="section-desc">
+    Every player action triggers layered feedback across visual, audio, and UI channels.
+    The <code>Effects</code> class in <code>render.js</code> manages particles and screen effects;
+    <code>main.js</code> orchestrates timing.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 800 410" width="800" height="410" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Event column -->
+      <text x="20" y="28" fill="#6b7194" font-size="12" font-weight="700">EVENT</text>
+      <text x="170" y="28" fill="#a78bfa" font-size="12" font-weight="700">VISUAL</text>
+      <text x="420" y="28" fill="#f472b6" font-size="12" font-weight="700">AUDIO</text>
+      <text x="600" y="28" fill="#ffd700" font-size="12" font-weight="700">UI</text>
+      <line x1="0" y1="38" x2="800" y2="38" stroke="#2e3455" stroke-width="1"/>
+
+      <!-- Tile Select -->
+      <text x="20" y="65" fill="#fb923c" font-size="13" font-weight="700">Tile Select</text>
+      <text x="170" y="65" fill="#c8cce0" font-size="12">sparkleTile() &bull; tile floats up</text>
+      <text x="420" y="65" fill="#c8cce0" font-size="12">playSelect(pitch++)</text>
+      <text x="600" y="65" fill="#c8cce0" font-size="12">Letter added to word area</text>
+
+      <!-- Word Valid -->
+      <text x="20" y="105" fill="#4ade80" font-size="13" font-weight="700">Word Valid</text>
+      <text x="170" y="105" fill="#c8cce0" font-size="12">explodeTile() per tile</text>
+      <text x="170" y="122" fill="#c8cce0" font-size="12">shake(intensity) &bull; flashScreen()</text>
+      <text x="170" y="139" fill="#c8cce0" font-size="12">pulseBg() &bull; ScorePopup</text>
+      <text x="420" y="105" fill="#c8cce0" font-size="12">playWordSuccess()</text>
+      <text x="420" y="122" fill="#c8cce0" font-size="12">playCombo() if combo&gt;1</text>
+      <text x="600" y="105" fill="#c8cce0" font-size="12">Score counter animates</text>
+      <text x="600" y="122" fill="#c8cce0" font-size="12">Combo display scales up</text>
+
+      <!-- Word Invalid -->
+      <text x="20" y="180" fill="#f87171" font-size="13" font-weight="700">Word Invalid</text>
+      <text x="170" y="180" fill="#c8cce0" font-size="12">tile.shakeX animation</text>
+      <text x="170" y="197" fill="#c8cce0" font-size="12">flashScreen(red)</text>
+      <text x="420" y="180" fill="#c8cce0" font-size="12">playWordFail()</text>
+      <text x="600" y="180" fill="#c8cce0" font-size="12">Word area shakes + red flash</text>
+
+      <!-- Board Clear -->
+      <text x="20" y="237" fill="#22d3ee" font-size="13" font-weight="700">Board Clear</text>
+      <text x="170" y="237" fill="#c8cce0" font-size="12">celebrate() &mdash; 60 rainbow particles</text>
+      <text x="170" y="254" fill="#c8cce0" font-size="12">shake(12) &bull; flashScreen(gold)</text>
+      <text x="420" y="237" fill="#c8cce0" font-size="12">playCelebration()</text>
+      <text x="600" y="237" fill="#c8cce0" font-size="12">+500 bonus popup</text>
+
+      <!-- Shuffle -->
+      <text x="20" y="294" fill="#8888ff" font-size="13" font-weight="700">Shuffle</text>
+      <text x="170" y="294" fill="#c8cce0" font-size="12">sparkleTile() all free &bull; shake(4)</text>
+      <text x="170" y="311" fill="#c8cce0" font-size="12">flashScreen(blue)</text>
+      <text x="420" y="294" fill="#c8cce0" font-size="12">playDeselect()</text>
+      <text x="600" y="294" fill="#c8cce0" font-size="12">&minus;50 popup &bull; combo reset</text>
+
+      <!-- Swap -->
+      <text x="20" y="351" fill="#ffcc44" font-size="13" font-weight="700">Swap</text>
+      <text x="170" y="351" fill="#c8cce0" font-size="12">sparkleTile() selected &bull; shake(3)</text>
+      <text x="420" y="351" fill="#c8cce0" font-size="12">playDeselect()</text>
+      <text x="600" y="351" fill="#c8cce0" font-size="12">&minus;25&times;n popup &bull; combo reset</text>
+
+      <!-- Ambient -->
+      <text x="20" y="391" fill="#6b7194" font-size="13" font-weight="700">Ambient</text>
+      <text x="170" y="391" fill="#c8cce0" font-size="12">15 floating particles (always)</text>
+      <text x="420" y="391" fill="#6b7194" font-size="12">&mdash;</text>
+      <text x="600" y="391" fill="#6b7194" font-size="12">&mdash;</text>
+
+      <!-- Column dividers -->
+      <line x1="155" y1="15" x2="155" y2="400" stroke="#2e3455" stroke-width="1"/>
+      <line x1="405" y1="15" x2="405" y2="400" stroke="#2e3455" stroke-width="1"/>
+      <line x1="585" y1="15" x2="585" y2="400" stroke="#2e3455" stroke-width="1"/>
+    </svg>
+    <div class="diagram-label">Fig 6. Juice matrix &mdash; every event triggers visual, audio, and UI responses simultaneously</div>
+  </div>
+
+  <h3>Particle System Details</h3>
+  <div class="effect-grid">
+    <div class="effect-item">
+      <div class="trigger">Particle</div>
+      <div class="detail">Square with rotation, gravity (200), friction (0.98), fade by life ratio. Drawn as filled rotated rect.</div>
+    </div>
+    <div class="effect-item">
+      <div class="trigger">ScorePopup</div>
+      <div class="detail">Punch-scale-in (easeOutBack &times;1.3 then settle), float upward, fade after 1.5s.</div>
+    </div>
+    <div class="effect-item">
+      <div class="trigger">Screen Shake</div>
+      <div class="detail">Random (x,y) offset per frame, intensity decays linearly over duration. Canvas translate transform.</div>
+    </div>
+    <div class="effect-item">
+      <div class="trigger">Flash Overlay</div>
+      <div class="detail">Full-screen color rect, alpha decays at 4/s. Drawn after all game content (unaffected by shake).</div>
+    </div>
+    <div class="effect-item">
+      <div class="trigger">Bg Pulse</div>
+      <div class="detail">Shifts gradient RGB channels, decays at 2/s. Subtle but noticeable on big plays.</div>
+    </div>
+    <div class="effect-item">
+      <div class="trigger">Ambient</div>
+      <div class="detail">Max 15 particles floating upward (gravity: &minus;10), spawned at canvas bottom, hue 40&ndash;60, 3&ndash;7s life.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 12. RENDER PIPELINE                                                -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">12</span> Render Pipeline</h2>
+  <p class="section-desc">
+    Single <code>&lt;canvas&gt;</code>, 2D context, DPR-aware. The game loop runs at ~60fps
+    via <code>requestAnimationFrame</code>.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 700 360" width="700" height="360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Pipeline steps -->
+      <g transform="translate(50, 20)">
+        <rect x="0" y="0" width="600" height="40" rx="8" fill="#1a1040" stroke="#3e4466" stroke-width="1"/>
+        <text x="300" y="25" text-anchor="middle" fill="#fb923c" font-size="14" font-weight="700">ctx.save() + ctx.translate(shake.x, shake.y)</text>
+
+        <line x1="300" y1="40" x2="300" y2="58" stroke="#3e4466" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+        <rect x="0" y="60" width="600" height="36" rx="8" fill="#232840" stroke="#3e4466" stroke-width="1"/>
+        <text x="300" y="83" text-anchor="middle" fill="#6b7194" font-size="13" font-weight="600">1. Draw background gradient (with bgPulse color shift)</text>
+
+        <line x1="300" y1="96" x2="300" y2="110" stroke="#3e4466" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+        <rect x="0" y="112" width="600" height="36" rx="8" fill="#232840" stroke="#3e4466" stroke-width="1"/>
+        <text x="300" y="135" text-anchor="middle" fill="#6b7194" font-size="13" font-weight="600">2. Draw ambient particles (behind tiles)</text>
+
+        <line x1="300" y1="148" x2="300" y2="162" stroke="#3e4466" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+        <rect x="0" y="164" width="600" height="50" rx="8" fill="#232840" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="300" y="185" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="700">3. Draw tiles (sorted: layer asc, row asc, col asc)</text>
+        <text x="300" y="202" text-anchor="middle" fill="#6b7194" font-size="11">shadow &rarr; 3D side &rarr; face &rarr; overlays &rarr; letter &rarr; score</text>
+
+        <line x1="300" y1="214" x2="300" y2="228" stroke="#3e4466" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+        <rect x="0" y="230" width="600" height="36" rx="8" fill="#232840" stroke="#3e4466" stroke-width="1"/>
+        <text x="300" y="253" text-anchor="middle" fill="#6b7194" font-size="13" font-weight="600">4. Draw effect particles + score popups (in front of tiles)</text>
+
+        <line x1="300" y1="266" x2="300" y2="280" stroke="#3e4466" stroke-width="1.5" marker-end="url(#arrowWhite)"/>
+
+        <rect x="0" y="282" width="600" height="36" rx="8" fill="#232840" stroke="#3e4466" stroke-width="1"/>
+        <text x="300" y="305" text-anchor="middle" fill="#fb923c" font-size="13" font-weight="600">5. ctx.restore() &rarr; Draw flash overlay (unshaken)</text>
+      </g>
+
+      <!-- DPR note -->
+      <text x="350" y="350" text-anchor="middle" fill="#3e4466" font-size="11">Canvas: width = innerWidth &times; DPR | ctx.setTransform(DPR, 0, 0, DPR, 0, 0) for sharp rendering on retina</text>
+    </svg>
+    <div class="diagram-label">Fig 7. Per-frame canvas render pipeline</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 13. AUDIO SYSTEM                                                   -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">13</span> Audio System</h2>
+  <p class="section-desc">
+    100% procedural via Web Audio API &mdash; no audio files. <code>AudioContext</code>
+    is lazy-initialized on first user interaction to comply with autoplay policies.
+  </p>
+
+  <table>
+    <tr><th>Sound</th><th>Oscillator</th><th>Frequency</th><th>Duration</th><th>Notes</th></tr>
+    <tr>
+      <td><code>playTick()</code></td>
+      <td>sine</td>
+      <td>800 &rarr; 400 Hz</td>
+      <td>60ms</td>
+      <td>Soft UI click</td>
+    </tr>
+    <tr>
+      <td><code>playSelect(n)</code></td>
+      <td>triangle</td>
+      <td>(400 + n&times;80) &rarr; &times;1.5</td>
+      <td>120ms</td>
+      <td>Pitch rises with word length</td>
+    </tr>
+    <tr>
+      <td><code>playDeselect()</code></td>
+      <td>sine</td>
+      <td>500 &rarr; 300 Hz</td>
+      <td>100ms</td>
+      <td>Descending note</td>
+    </tr>
+    <tr>
+      <td><code>playWordSuccess()</code></td>
+      <td>triangle + sine</td>
+      <td>440 &times; [1, 1.25, 1.5, 2]</td>
+      <td>4&times;70ms arpeggio</td>
+      <td>Major chord, extra shimmer if &gt;30pts</td>
+    </tr>
+    <tr>
+      <td><code>playWordFail()</code></td>
+      <td>sawtooth</td>
+      <td>150 &rarr; 120 Hz</td>
+      <td>2&times;150ms</td>
+      <td>Harsh buzz</td>
+    </tr>
+    <tr>
+      <td><code>playCombo(lvl)</code></td>
+      <td>sine</td>
+      <td>(600 + lvl&times;100) &rarr; &times;2</td>
+      <td>200ms</td>
+      <td>Rising tone per combo level</td>
+    </tr>
+    <tr>
+      <td><code>playCelebration()</code></td>
+      <td>sine</td>
+      <td>440 &times; major scale</td>
+      <td>8&times;80ms scale</td>
+      <td>Full ascending octave</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 14. CLASS REFERENCE                                                -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">14</span> Class Reference</h2>
+  <p class="section-desc">
+    All classes live under <code>window.MojAbble</code>. Seven classes, one constants object, one validator.
+  </p>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">Game</span>
+      <span class="class-file">main.js</span>
+    </div>
+    <div class="class-desc">Top-level controller. Owns all subsystems, runs the game loop, handles input, orchestrates juice.</div>
+    <ul class="methods">
+      <li><code>startGame()</code></li>
+      <li><code>submitWord()</code></li>
+      <li><code>clearSelection()</code></li>
+      <li><code>deselectLast()</code></li>
+      <li><code>shuffleFreeTiles()</code> &mdash; &minus;50pts</li>
+      <li><code>swapTiles()</code> &mdash; &minus;25pts/tile</li>
+      <li><code>toggleHighlight()</code> &mdash; Light on/off</li>
+      <li><code>giveUp()</code></li>
+      <li><code>_invalidWord()</code></li>
+      <li><code>_wordSuccess(result)</code></li>
+      <li><code>_showWordStats(word, result)</code> &mdash; stats toast + API fetch</li>
+      <li><code>_fallbackFact(word)</code> &mdash; letter stats if API fails</li>
+      <li><code>_boardCleared()</code></li>
+      <li><code>_gameOver()</code></li>
+      <li><code>_getPlayerName()</code> &mdash; read + persist name</li>
+      <li><code>_submitToServer(payload)</code> &mdash; POST to scores.php</li>
+      <li><code>_fetchGlobalScores()</code> &mdash; GET global leaderboard</li>
+      <li><code>_renderBoards(prefix, mode, score)</code></li>
+      <li><code>_initBoardTabs(prefix)</code> &mdash; Global/Local tabs</li>
+      <li><code>_escHtml(s)</code> &mdash; XSS-safe text</li>
+      <li><code>_mpShowLobby()</code> &mdash; open multiplayer screen</li>
+      <li><code>_mpCreateRoom()</code> &mdash; POST room.php create</li>
+      <li><code>_mpJoinRoom()</code> &mdash; POST room.php join</li>
+      <li><code>_mpStartPolling()</code> &mdash; 2s opponent poll</li>
+      <li><code>_mpFinish()</code> &mdash; send final score</li>
+      <li><code>_mpShowResult(opp)</code> &mdash; match result screen</li>
+      <li><code>_updateWordArea()</code></li>
+      <li><code>_updateComboDisplay()</code></li>
+      <li><code>_loop(timestamp)</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">Board</span>
+      <span class="class-file">engine.js</span>
+    </div>
+    <div class="class-desc">Manages all tiles, their layout positions, selection state, and free-tile detection. The core game-state object.</div>
+    <ul class="methods">
+      <li><code>init(layoutName, difficulty)</code> &mdash; generates board with difficulty bag</li>
+      <li><code>centerOnCanvas(w, h)</code></li>
+      <li><code>isFree(tile)</code> &mdash; the Mahjong rule check</li>
+      <li><code>selectTile(tile)</code></li>
+      <li><code>deselectTile(tile)</code></li>
+      <li><code>deselectAll()</code></li>
+      <li><code>deselectLast()</code></li>
+      <li><code>removeSelected()</code></li>
+      <li><code>finalizeRemoval(tile)</code></li>
+      <li><code>getCurrentWord()</code></li>
+      <li><code>getTileAtPos(sx, sy)</code></li>
+      <li><code>getRenderOrder()</code></li>
+      <li><code>canFormWord()</code></li>
+      <li><code>getRemainingCount()</code></li>
+      <li><code>shuffleFreeLetters()</code> &mdash; redistribute ALL active tiles' letters</li>
+      <li><code>swapSelectedLetters()</code> &mdash; swap</li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">Tile</span>
+      <span class="class-file">engine.js</span>
+    </div>
+    <div class="class-desc">Single tile on the board. Holds grid position, letter, score, selection/removal state, and per-tile animation values.</div>
+    <ul class="methods">
+      <li><code>getScreenPos(offsetX, offsetY)</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">Renderer</span>
+      <span class="class-file">render.js</span>
+    </div>
+    <div class="class-desc">Canvas 2D rendering engine. Handles DPR scaling, tile drawing with 3D depth, scrolling word background, and composites all visual layers.</div>
+    <ul class="methods">
+      <li><code>resize()</code></li>
+      <li><code>render(board, effects, dt)</code></li>
+      <li><code>setBgWord(word)</code> &mdash; set scrolling word tiling</li>
+      <li><code>_renderBgTile()</code> &mdash; pre-render to offscreen canvas</li>
+      <li><code>_drawBg(ctx, effects)</code> &mdash; gradient + word tiling</li>
+      <li><code>_drawTile(ctx, tile, board)</code></li>
+      <li><code>_drawTileBody(...)</code></li>
+      <li><code>_roundRect(ctx, ...)</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">Effects</span>
+      <span class="class-file">render.js</span>
+    </div>
+    <div class="class-desc">Manages all screen-level effects: particles, popups, screen shake, flash overlay, background pulse, and ambient particles.</div>
+    <ul class="methods">
+      <li><code>update(dt)</code></li>
+      <li><code>explodeTile(x, y, color, intensity)</code></li>
+      <li><code>sparkleTile(x, y)</code></li>
+      <li><code>addPopup(x, y, text, color, size)</code></li>
+      <li><code>shake(intensity, duration)</code></li>
+      <li><code>flashScreen(color, alpha)</code></li>
+      <li><code>pulseBg(amount)</code></li>
+      <li><code>celebrate(cx, cy)</code></li>
+      <li><code>drawParticles(ctx)</code></li>
+      <li><code>drawPopups(ctx)</code></li>
+      <li><code>drawFlash(ctx, w, h)</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">ScoreManager</span>
+      <span class="class-file">engine.js</span>
+    </div>
+    <div class="class-desc">Tracks score, combos, and session stats. Provides smooth score display interpolation.</div>
+    <ul class="methods">
+      <li><code>reset()</code></li>
+      <li><code>submitWord(word, time)</code> &rarr; scoring breakdown</li>
+      <li><code>updateDisplay(dt)</code> &mdash; smooth counter</li>
+      <li><code>checkComboTimeout(time)</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">AudioManager</span>
+      <span class="class-file">audio.js</span>
+    </div>
+    <div class="class-desc">Procedural audio via Web Audio API. Lazy-initializes AudioContext. Seven sound methods, no external files.</div>
+    <ul class="methods">
+      <li><code>playTick()</code></li>
+      <li><code>playSelect(wordLen)</code></li>
+      <li><code>playDeselect()</code></li>
+      <li><code>playWordSuccess(score, combo)</code></li>
+      <li><code>playWordFail()</code></li>
+      <li><code>playCombo(level)</code></li>
+      <li><code>playCelebration()</code></li>
+    </ul>
+  </div>
+
+  <div class="class-card">
+    <div class="class-header">
+      <span class="class-name">WordValidator</span>
+      <span class="class-file">words.js</span>
+    </div>
+    <div class="class-desc">Static object (not a class). Loads 267K-word SOWPODS tournament dictionary from <code>words.txt</code> at boot via <code>loadDictionary()</code>. During load, each word is hashed (FNV-1a) and checked against a 57-entry blocked-hash <code>Set</code> - blocked words are filtered out before building <code>VALID_WORDS</code>. O(1) <code>Set</code> lookup + Scrabble scoring.</div>
+    <ul class="methods">
+      <li><code>isValid(word)</code> &rarr; boolean</li>
+      <li><code>getWordScore(word)</code> &rarr; letter sum</li>
+      <li><code>getLengthBonus(len)</code> &rarr; bonus points</li>
+      <li><code>getLetterScore(letter)</code> &rarr; single letter pts</li>
+      <li><code>loaded</code> &rarr; boolean (getter)</li>
+    </ul>
+    <p style="margin-top:8px; color:var(--text-dim); font-size:12px;"><code>MojAbble.loadDictionary()</code> &rarr; Promise (fetches words.txt, populates Set)</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 15. SCALING PATH                                                   -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">15</span> Path to Scale</h2>
+  <p class="section-desc">Architecture decisions that make future expansion straightforward.</p>
+
+  <table>
+    <tr><th>Feature</th><th>Where to change</th><th>Effort</th></tr>
+    <tr>
+      <td><strong>New layouts</strong> (turtle, fortress, bridge)</td>
+      <td>Add a function to <code>Layouts</code> in engine.js that returns a new position array</td>
+      <td>Low</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Full tournament dictionary</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>267,627 words from SOWPODS / Collins Scrabble Words - the international competitive tournament dictionary. 3+ letters, no length cap.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong>ES modules / bundler</strong></td>
+      <td>Replace IIFE pattern with <code>export</code>/<code>import</code>, add Vite/Rollup</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Global leaderboard</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>Server-side PHP backend (<code>scores.php</code>) with flat JSON storage. Top 50 global scores + rare words. Player names, rate limiting, Global/Local tab UI.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Head-to-head multiplayer</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>Room-based 1v1 race mode via <code>room.php</code>. Seeded PRNG (mulberry32) gives both players identical boards. 2-second poll for live opponent score. 30-second countdown when first player finishes. Match result screen.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong>Timed mode / challenge mode</strong></td>
+      <td>Add new state to Game state machine, countdown in <code>_loop()</code></td>
+      <td>Low</td>
+    </tr>
+    <tr>
+      <td><strong>Tile themes / skins</strong></td>
+      <td>Swap <code>C.COLORS</code> object + adjust <code>_drawTileBody</code></td>
+      <td>Low</td>
+    </tr>
+    <tr>
+      <td><strong>Power-ups</strong> (wildcard, bomb, shuffle)</td>
+      <td>Add tile types to <code>Tile</code> class, special rendering in <code>Renderer</code>, actions in <code>Game</code></td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Mobile-first UI</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>4-breakpoint responsive CSS, touch input, auto-scaling board, mobile word stats</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Difficulty modes</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>Three letter bags (Easy/Normal/Hard) with tuned distributions. Selector on start screen.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Word stats + definitions</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>Post-word toast with rarity, score breakdown, definition/etymology via Free Dictionary API</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Offensive word filter</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>FNV-1a hashed blocklist (57 entries). No plain-text slurs in source. Filtered at dictionary load.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Local + Global scoreboard</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>localStorage top 10 personal scores + server-side top 50 global scores. Global/Local tab switcher on start + game-over screens.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">Rarest words hall of fame</strong> <span style="color:var(--green)">&check; Done</span></td>
+      <td>Both local (top 10) and global (top 50) rarest words. Session's best rare word submitted to server alongside final score.</td>
+      <td style="color:var(--green)">Done</td>
+    </tr>
+  </table>
+</section>
+
+</div><!-- /.container -->
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 16. BUILD TIMELINE                                                 -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2><span class="accent">16</span> Build Timeline</h2>
+  <p class="section-desc">
+    Key milestones during MojAbble's initial development.
+  </p>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 820 480" width="820" height="480" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+      <!-- Timeline line -->
+      <line x1="80" y1="30" x2="80" y2="460" stroke="#2e3455" stroke-width="2"/>
+
+      <!-- Milestone dots and labels -->
+      <!-- 0:00 -->
+      <circle cx="80" cy="40" r="8" fill="#ffd700" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="38" fill="#ffd700" font-size="13" font-weight="800">0:00 &mdash; Concept</text>
+      <text x="100" y="56" fill="#6b7194" font-size="12">"Mahjong + Scrabble, English letters towered in a pyramid layout."</text>
+      <text x="100" y="72" fill="#3e4466" font-size="11">Agreed on: pyramid layout, Scrabble scoring, single player, path to scale.</text>
+
+      <!-- 0:03 -->
+      <circle cx="80" cy="100" r="6" fill="#60a5fa" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="98" fill="#60a5fa" font-size="13" font-weight="800">0:03 &mdash; Architecture Planned</text>
+      <text x="100" y="116" fill="#6b7194" font-size="12">5 files, namespace pattern, Canvas 2D + Web Audio API, zero dependencies.</text>
+      <text x="100" y="132" fill="#3e4466" font-size="11">Decision: plain &lt;script&gt; tags (no bundler) so you can double-click index.html to play.</text>
+
+      <!-- 0:05 -->
+      <circle cx="80" cy="160" r="6" fill="#4ade80" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="158" fill="#4ade80" font-size="13" font-weight="800">0:05 &mdash; Core Engine Written</text>
+      <text x="100" y="176" fill="#6b7194" font-size="12">index.html, words.js (3000+ words), engine.js (Board, Tile, Layout, ScoreManager),</text>
+      <text x="100" y="192" fill="#6b7194" font-size="12">render.js (Renderer, Particle, Effects), audio.js (7 procedural sounds), main.js (Game loop).</text>
+      <text x="100" y="208" fill="#3e4466" font-size="11">All 5 source files created in parallel batches. ~78KB total.</text>
+
+      <!-- 0:12 -->
+      <circle cx="80" cy="236" r="6" fill="#a78bfa" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="234" fill="#a78bfa" font-size="13" font-weight="800">0:12 &mdash; First Playable</text>
+      <text x="100" y="252" fill="#6b7194" font-size="12">Game boots, tiles render with 3D effect, click-to-select works, word validation fires,</text>
+      <text x="100" y="268" fill="#6b7194" font-size="12">particles explode, score counts, combos chain. Fixed DPR bug + resize handler.</text>
+
+      <!-- 0:18 -->
+      <circle cx="80" cy="296" r="6" fill="#f472b6" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="294" fill="#f472b6" font-size="13" font-weight="800">0:18 &mdash; Systems Docs Created</text>
+      <text x="100" y="312" fill="#6b7194" font-size="12">Full HTML documentation: 12 sections, 7 SVG diagrams, class reference, scaling guide.</text>
+      <text x="100" y="328" fill="#3e4466" font-size="11">Docs icon added to game: animated tile with eyes, sparkles, speech bubble on hover.</text>
+
+      <!-- 0:25 -->
+      <circle cx="80" cy="356" r="6" fill="#fb923c" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="354" fill="#fb923c" font-size="13" font-weight="800">0:25 &mdash; Stuck Mechanics Added</text>
+      <text x="100" y="372" fill="#6b7194" font-size="12">Three escape valves: Shuffle (&minus;50 pts), Swap (&minus;25/tile), Give Up.</text>
+      <text x="100" y="388" fill="#3e4466" font-size="11">New Board methods, button styling, docs updated with stuck-mechanics diagram.</text>
+
+      <!-- 0:35 -->
+      <circle cx="80" cy="416" r="8" fill="#22d3ee" stroke="#232840" stroke-width="3"/>
+      <text x="100" y="414" fill="#22d3ee" font-size="13" font-weight="800">0:35 &mdash; Juice Pass</text>
+      <text x="100" y="432" fill="#6b7194" font-size="12">Flip animations for shuffle/swap, selection punch + ring burst, staggered tile removal</text>
+      <text x="100" y="448" fill="#6b7194" font-size="12">with fly-up + rotate, red particle spray on invalid, per-tile score popups, elastic easing.</text>
+      <text x="100" y="464" fill="#3e4466" font-size="11">Timeline added to docs. Ship it.</text>
+    </svg>
+    <div class="diagram-label">Fig 8. Build timeline &mdash; initial development milestones</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- 17. CHANGELOG                                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<div class="container">
+<section>
+  <h2><span class="accent">17</span> Changelog</h2>
+  <p class="section-desc">Notable updates to MojAbble, most recent first.</p>
+
+  <div class="changelog">
+    <div class="changelog-entry">
+      <div class="cl-date">May 19, 2026</div>
+      <ul>
+        <li><span class="changelog-tag new">NEW</span> <strong>Head-to-head multiplayer</strong> &mdash; Room-based 1v1 race mode. Create a room, share the 4-character code, both players get the identical board (seeded PRNG). Live opponent score overlay, 30-second countdown when first player finishes, match result screen with win/lose/tie. Powered by <code>room.php</code> with flat JSON storage and 2-second polling.</li>
+        <li><span class="changelog-tag new">NEW</span> <strong>Global server-side leaderboard</strong> &mdash; <code>scores.php</code> PHP backend with flat JSON storage. Top 50 global high scores + top 50 rarest words, shared across all visitors. Rate-limited, input-validated, no database.</li>
+        <li><span class="changelog-tag new">NEW</span> <strong>Player name system</strong> &mdash; Name input on start screen, persisted in localStorage, submitted with every server score. Names appear on global leaderboard entries.</li>
+        <li><span class="changelog-tag new">NEW</span> <strong>Global / Local leaderboard tabs</strong> &mdash; Both start screen and game-over screen have a tab switcher to toggle between global (server) and local (localStorage) scoreboards.</li>
+        <li><span class="changelog-tag new">NEW</span> <strong>Seeded board generation</strong> &mdash; <code>mulberry32</code> deterministic PRNG in engine.js. When a seed is provided (multiplayer), both players generate identical tile layouts.</li>
+        <li><span class="changelog-tag update">UPDATE</span> <strong>Tournament dictionary confirmed</strong> &mdash; Dictionary labelled as SOWPODS / Collins Scrabble Words (267,627 words). Badge added to start screen. Docs updated throughout.</li>
+        <li><span class="changelog-tag update">UPDATE</span> <strong>Word length documented</strong> &mdash; Minimum 3 letters, no maximum cap. Length bonus formula scales for 9+ letter words (+80 + 40&times;(n-8)).</li>
+        <li><span class="changelog-tag update">UPDATE</span> <strong>Docs: tabbed code blocks</strong> &mdash; Data structures and code examples now use a tabbed interface for cleaner browsing.</li>
+        <li><span class="changelog-tag fix">FIX</span> <strong>Keyboard guard for name input</strong> &mdash; Enter/Space no longer triggers game start while typing in the player name field.</li>
+      </ul>
+    </div>
+
+    <div class="changelog-entry">
+      <div class="cl-date">April 2026 &mdash; Initial Build</div>
+      <ul>
+        <li><span class="changelog-tag new">NEW</span> Core game: Mahjong tile mechanics + Scrabble scoring, 68-tile pyramid board, 3 difficulty modes.</li>
+        <li><span class="changelog-tag new">NEW</span> Canvas 2D renderer with 3D tile depth, particle effects, screen shake, score popups.</li>
+        <li><span class="changelog-tag new">NEW</span> Procedural audio via Web Audio API (7 sounds, no audio files).</li>
+        <li><span class="changelog-tag new">NEW</span> Word stats toast with rarity tiers + Free Dictionary API definitions.</li>
+        <li><span class="changelog-tag new">NEW</span> Stuck mechanics: Shuffle, Swap, Give Up with strategic costs.</li>
+        <li><span class="changelog-tag new">NEW</span> Offensive word filter (FNV-1a hashed blocklist, 57 entries).</li>
+        <li><span class="changelog-tag new">NEW</span> Local scoreboards (top 10 scores + top 10 rarest words) via localStorage.</li>
+        <li><span class="changelog-tag new">NEW</span> Full systems documentation with SVG diagrams.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</div>
+
+<div style="text-align:center; padding:48px 32px; color:#6b7194; font-size:13px; border-top:1px solid #2e3455; line-height:2;">
+  <div style="color:#3e4466; margin-top:12px;">MojAbble Systems Documentation &bull; May 2026</div>
+</div>
+
+<!-- Tab switching for code blocks -->
+<script>
+document.querySelectorAll('[data-tabs]').forEach(tabs => {
+  tabs.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      tabs.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const panel = tabs.querySelector(`[data-panel="${btn.dataset.tab}"]`);
+      if (panel) panel.classList.add('active');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+node_modules/
+ios/App/Pods/
+ios/App/App/public/
+www/
+*.xcuserdatad/
+DerivedData/
+.DS_Store
+grep.exe.stackdump
+_rooms/
+_scores/

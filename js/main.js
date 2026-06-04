@@ -131,6 +131,7 @@ class Game {
   }
 
   _bindInput() {
+    let lastTouchTime = 0;
     const getMousePos = (e) => {
       const rect = this.canvas.getBoundingClientRect();
       return {
@@ -179,6 +180,7 @@ class Game {
     };
 
     this.canvas.addEventListener('click', (e) => {
+      if (Date.now() - lastTouchTime < 500) return;
       if (this.state !== 'playing') return;
       const pos = getMousePos(e);
       handleTileTap(pos.x, pos.y);
@@ -190,6 +192,7 @@ class Game {
       if (this.state !== 'playing') return;
       const touch = e.touches[0];
       const rect = this.canvas.getBoundingClientRect();
+      lastTouchTime = Date.now();
       handleTileTap(touch.clientX - rect.left, touch.clientY - rect.top);
     }, { passive: false });
 

@@ -57,12 +57,20 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i profile.mobileprovision))
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+          echo "Installed profile with UUID: $PROFILE_UUID"
 
           # Clean up decoded files
           rm certificate.p12 profile.mobileprovision
 
       - name: Build signed IPA
+        env:
+          PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}
         run: |
+          # Get the profile UUID for xcodebuild
+          echo "$PROFILE_BASE64" | base64 --decode > /tmp/profile.mobileprovision
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i /tmp/profile.mobileprovision))
+          rm /tmp/profile.mobileprovision
+
           xcodebuild archive \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -71,7 +79,8 @@ jobs:
             -archivePath build/MojAbble.xcarchive \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            DEVELOPMENT_TEAM=2TR68DXJ5D
+            DEVELOPMENT_TEAM=2TR68DXJ5D \
+            PROVISIONING_PROFILE="$PROFILE_UUID"
 
           xcodebuild -exportArchive \
             -archivePath build/MojAbble.xcarchive \

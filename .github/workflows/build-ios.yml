@@ -71,7 +71,6 @@ jobs:
             -archivePath build/MojAbble.xcarchive \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="MojAbble App Store" \
             DEVELOPMENT_TEAM=2TR68DXJ5D
 
           xcodebuild -exportArchive \

@@ -70,6 +70,12 @@ jobs:
           # Clean up decoded files
           rm certificate.p12 profile.mobileprovision
 
+      - name: Set build number
+        run: |
+          BUILD_NUM=${{ github.run_number }}
+          sed -i "" "s/CURRENT_PROJECT_VERSION = [0-9]*/CURRENT_PROJECT_VERSION = ${BUILD_NUM}/g" ios/App/App.xcodeproj/project.pbxproj
+          echo "Build number: ${BUILD_NUM}"
+
       - name: Build signed IPA
         env:
           PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE }}

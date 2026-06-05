@@ -289,9 +289,6 @@ class Board {
     this.offsetX = screenCenterX / this.scale - this.boardWidth / 2 - this.minCol * (C.TILE_W + C.TILE_GAP);
     this.offsetY = screenCenterY / this.scale - this.boardHeight / 2 - this.minRow * (C.TILE_H + C.TILE_GAP) + this.maxLayer * C.LAYER_DY;
 
-    // Nudge pile slightly right on mobile
-    if (canvasW < 768) {
-      this.offsetX += 10 / this.scale;
     }
   }
 

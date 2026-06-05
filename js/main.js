@@ -81,22 +81,22 @@ class Game {
   }
 
   _bindUI() {
-    document.getElementById('btn-start').addEventListener('click', () => this.startGame());
-    document.getElementById('btn-restart').addEventListener('click', () => this.startGame());
-    document.getElementById('btn-submit').addEventListener('click', () => this.submitWord());
-    document.getElementById('btn-clear').addEventListener('click', () => this.clearSelection());
-    document.getElementById('btn-shuffle').addEventListener('click', () => this.shuffleFreeTiles());
-    document.getElementById('btn-swap').addEventListener('click', () => this.swapTiles());
-    document.getElementById('btn-light').addEventListener('click', () => this.toggleHighlight());
-    document.getElementById('btn-giveup').addEventListener('click', () => this.giveUp());
+    this._bindBtn("btn-start", () => this.startGame());
+    this._bindBtn("btn-restart", () => this.startGame());
+    this._bindBtn("btn-submit", () => this.submitWord());
+    this._bindBtn("btn-clear", () => this.clearSelection());
+    this._bindBtn("btn-shuffle", () => this.shuffleFreeTiles());
+    this._bindBtn("btn-swap", () => this.swapTiles());
+    this._bindBtn("btn-light", () => this.toggleHighlight());
+    this._bindBtn("btn-giveup", () => this.giveUp());
 
     // Multiplayer UI
-    document.getElementById('btn-multiplayer').addEventListener('click', () => this._mpShowLobby());
-    document.getElementById('mp-create').addEventListener('click', () => this._mpCreateRoom());
-    document.getElementById('mp-join').addEventListener('click', () => this._mpJoinRoom());
-    document.getElementById('mp-back').addEventListener('click', () => this._mpHideAll());
-    document.getElementById('mp-cancel').addEventListener('click', () => this._mpCancel());
-    document.getElementById('btn-match-menu').addEventListener('click', () => this._mpBackToMenu());
+    this._bindBtn("btn-multiplayer", () => this._mpShowLobby());
+    this._bindBtn("mp-create", () => this._mpCreateRoom());
+    this._bindBtn("mp-join", () => this._mpJoinRoom());
+    this._bindBtn("mp-back", () => this._mpHideAll());
+    this._bindBtn("mp-cancel", () => this._mpCancel());
+    this._bindBtn("btn-match-menu", () => this._mpBackToMenu());
     document.getElementById('mp-join-code').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this._mpJoinRoom();
     });
@@ -128,6 +128,13 @@ class Game {
         this.deselectLast();
       }
     });
+  }
+
+  _bindBtn(id, fn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", fn);
+    el.addEventListener("touchend", (e) => { e.preventDefault(); fn(); });
   }
 
   _bindInput() {

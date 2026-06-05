@@ -14,7 +14,7 @@
       user-select: none;
       -webkit-user-select: none;
       cursor: default;
-      touch-action: none;
+      touch-action: manipulation;
       -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
     }
@@ -22,6 +22,7 @@
     canvas {
       display: block;
       width: 100vw;
+      touch-action: none;
       height: 100vh;
     }
 
@@ -166,6 +167,7 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      touch-action: manipulation;
       transition: transform 0.1s, box-shadow 0.1s;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -288,6 +290,7 @@
       background: linear-gradient(135deg, #ffd700, #ffaa00);
       color: #2a1810;
       cursor: pointer;
+      touch-action: manipulation;
       letter-spacing: 4px;
       text-transform: uppercase;
       box-shadow: 0 4px 20px rgba(255,215,0,0.4);
@@ -356,6 +359,7 @@
       background: linear-gradient(135deg, #ffd700, #ffaa00);
       color: #2a1810;
       cursor: pointer;
+      touch-action: manipulation;
       letter-spacing: 3px;
       text-transform: uppercase;
       box-shadow: 0 4px 20px rgba(255,215,0,0.4);

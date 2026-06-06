@@ -270,16 +270,16 @@ class Board {
   centerOnCanvas(canvasW, canvasH) {
     // Auto-scale board to fit any screen size
     const isMobile = canvasW < 768;
-    const topUI = isMobile ? 40 : 60;
-    const bottomUI = isMobile ? 80 : 150;
-    const pad = isMobile ? 2 : 12;
+    const topUI = isMobile ? 30 : 60;
+    const bottomUI = isMobile ? 60 : 150;
+    const pad = 0;
 
     const availW = canvasW - pad * 2;
     const availH = canvasH - topUI - bottomUI;
 
     const scaleX = availW / this.boardWidth;
     const scaleY = availH / this.boardHeight;
-    const maxScale = isMobile ? 1.6 : 1;
+    const maxScale = isMobile ? 2.0 : 1;
     this.scale = Math.min(maxScale, scaleX, scaleY);
 
     // Center board in available space (offsets are in pre-scale coords)

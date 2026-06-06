@@ -103,11 +103,14 @@ class Game {
 
     // Difficulty selection
     document.querySelectorAll('.diff-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      const diffHandler = () => {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         this.difficulty = btn.dataset.diff;
-      });
+      };
+      btn.addEventListener('pointerup', diffHandler);
+      btn.addEventListener('click', diffHandler);
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); diffHandler(); });
     });
 
     document.addEventListener('keydown', (e) => {
@@ -133,8 +136,18 @@ class Game {
   _bindBtn(id, fn) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener("click", fn);
-    el.addEventListener("touchend", (e) => { e.preventDefault(); fn(); });
+    let fired = false;
+    const handler = (e) => {
+      if (fired) return;
+      fired = true;
+      setTimeout(() => { fired = false; }, 300);
+      e.preventDefault();
+      e.stopPropagation();
+      fn();
+    };
+    el.addEventListener("pointerup", handler);
+    el.addEventListener("click", handler);
+    el.addEventListener("touchend", handler);
   }
 
   _bindInput() {

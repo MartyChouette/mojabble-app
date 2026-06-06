@@ -322,6 +322,7 @@
     #game-over {
       overflow-y: auto;
       padding: 40px 20px;
+      padding-top: calc(40px + env(safe-area-inset-top));
     }
 
     #game-over h2 {
@@ -976,7 +977,7 @@
     }
 
     /* ── Docs Icon ── */
-    #docs-icon {
+    #docs-icon { display: none;
       position: fixed;
       bottom: 18px;
       right: 18px;
@@ -1192,13 +1193,13 @@
       #score-display .score-value { font-size: 28px; }
       #score-display .score-label { font-size: 14px; letter-spacing: 2px; }
 
-      #tiles-left { top: 36px; left: 14px; font-size: 12px; }
+      #tiles-left { top: 48px; left: 14px; font-size: 12px; }
       #tiles-left .count { font-size: 20px; }
 
       #combo-display { top: 36px; font-size: 22px; }
 
       #word-area {
-        bottom: 200px;
+        bottom: 210px;
         gap: 4px;
         padding: 6px 12px;
         min-height: 50px;
@@ -1241,7 +1242,7 @@
       #game-over .stats { font-size: 13px; }
       #btn-restart { padding: 12px 32px; font-size: 16px; }
 
-      #docs-icon { bottom: 10px; right: 10px; }
+      #docs-icon { display: none; bottom: 10px; right: 10px; }
       #docs-icon .doc-tile { width: 36px; height: 44px; }
       #docs-icon .doc-tile svg { width: 20px; height: 20px; }
       #docs-icon .doc-bubble { font-size: 10px; bottom: 52px; }

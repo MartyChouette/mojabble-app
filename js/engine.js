@@ -287,6 +287,7 @@ class Board {
     const screenCenterY = topUI + availH / 2;
 
     this.offsetX = screenCenterX / this.scale - this.boardWidth / 2 - this.minCol * (C.TILE_W + C.TILE_GAP);
+    if (canvasW < 768) this.offsetX += 5 / this.scale;
     this.offsetY = screenCenterY / this.scale - this.boardHeight / 2 - this.minRow * (C.TILE_H + C.TILE_GAP) + this.maxLayer * C.LAYER_DY;
 
   }

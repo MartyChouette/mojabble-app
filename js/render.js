@@ -373,7 +373,10 @@ class Renderer {
 
   resize() {
     this.dpr = window.devicePixelRatio || 1;
-    const rect = this.canvas.getBoundingClientRect();
+    let rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      rect = { width: window.innerWidth, height: window.innerHeight };
+    }
     this.canvas.width = rect.width * this.dpr;
     this.canvas.height = rect.height * this.dpr;
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);

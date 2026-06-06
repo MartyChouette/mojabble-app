@@ -49,6 +49,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode > android/app/mojabble-release.keystore
 
           cd android
+          chmod +x gradlew
           ./gradlew bundleRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/mojabble-release.keystore \
             -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \

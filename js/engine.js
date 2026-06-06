@@ -260,8 +260,8 @@ class Board {
       maxLayer = Math.max(maxLayer, t.layer);
     }
 
-    this.boardWidth = (maxC - minC + 1) * (C.TILE_W + C.TILE_GAP) + maxLayer * C.LAYER_DX + C.TILE_W;
-    this.boardHeight = (maxR - minR + 1) * (C.TILE_H + C.TILE_GAP) + maxLayer * C.LAYER_DY + C.TILE_H;
+    this.boardWidth = (maxC - minC) * (C.TILE_W + C.TILE_GAP) + C.TILE_W + maxLayer * C.LAYER_DX;
+    this.boardHeight = (maxR - minR) * (C.TILE_H + C.TILE_GAP) + C.TILE_H + maxLayer * C.LAYER_DY;
     this.minCol = minC;
     this.minRow = minR;
     this.maxLayer = maxLayer;

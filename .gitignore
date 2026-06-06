@@ -8,3 +8,4 @@ DerivedData/
 grep.exe.stackdump
 _rooms/
 _scores/
+*.keystore

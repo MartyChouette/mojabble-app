@@ -1,0 +1,62 @@
+name: Build Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets
+        run: |
+          mkdir -p www
+          cp index.html docs.html words.txt www/
+          cp -r js www/
+          npx cap copy android
+          npx cap sync android
+
+      - name: Set build number
+        run: |
+          BUILD_NUM=${{ github.run_number }}
+          sed -i "s/versionCode 1/versionCode ${BUILD_NUM}/" android/app/build.gradle
+          echo "Build number set to ${BUILD_NUM}"
+
+      - name: Build signed AAB
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/mojabble-release.keystore
+
+          cd android
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/app/mojabble-release.keystore \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MojAbble-Android
+          path: android/app/build/outputs/bundle/release/app-release.aab

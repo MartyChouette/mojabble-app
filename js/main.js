@@ -81,36 +81,33 @@ class Game {
   }
 
   _bindUI() {
-    this._bindBtn("btn-start", () => this.startGame());
-    this._bindBtn("btn-restart", () => this.startGame());
-    this._bindBtn("btn-submit", () => this.submitWord());
-    this._bindBtn("btn-clear", () => this.clearSelection());
-    this._bindBtn("btn-shuffle", () => this.shuffleFreeTiles());
-    this._bindBtn("btn-swap", () => this.swapTiles());
-    this._bindBtn("btn-light", () => this.toggleHighlight());
-    this._bindBtn("btn-giveup", () => this.giveUp());
+    document.getElementById('btn-start').addEventListener('click', () => this.startGame());
+    document.getElementById('btn-restart').addEventListener('click', () => this.startGame());
+    document.getElementById('btn-submit').addEventListener('click', () => this.submitWord());
+    document.getElementById('btn-clear').addEventListener('click', () => this.clearSelection());
+    document.getElementById('btn-shuffle').addEventListener('click', () => this.shuffleFreeTiles());
+    document.getElementById('btn-swap').addEventListener('click', () => this.swapTiles());
+    document.getElementById('btn-light').addEventListener('click', () => this.toggleHighlight());
+    document.getElementById('btn-giveup').addEventListener('click', () => this.giveUp());
 
     // Multiplayer UI
-    this._bindBtn("btn-multiplayer", () => this._mpShowLobby());
-    this._bindBtn("mp-create", () => this._mpCreateRoom());
-    this._bindBtn("mp-join", () => this._mpJoinRoom());
-    this._bindBtn("mp-back", () => this._mpHideAll());
-    this._bindBtn("mp-cancel", () => this._mpCancel());
-    this._bindBtn("btn-match-menu", () => this._mpBackToMenu());
+    document.getElementById('btn-multiplayer').addEventListener('click', () => this._mpShowLobby());
+    document.getElementById('mp-create').addEventListener('click', () => this._mpCreateRoom());
+    document.getElementById('mp-join').addEventListener('click', () => this._mpJoinRoom());
+    document.getElementById('mp-back').addEventListener('click', () => this._mpHideAll());
+    document.getElementById('mp-cancel').addEventListener('click', () => this._mpCancel());
+    document.getElementById('btn-match-menu').addEventListener('click', () => this._mpBackToMenu());
     document.getElementById('mp-join-code').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this._mpJoinRoom();
     });
 
     // Difficulty selection
     document.querySelectorAll('.diff-btn').forEach(btn => {
-      const diffHandler = () => {
+      btn.addEventListener('click', () => {
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         this.difficulty = btn.dataset.diff;
-      };
-      btn.addEventListener('pointerup', diffHandler);
-      btn.addEventListener('click', diffHandler);
-      btn.addEventListener('touchend', (e) => { e.preventDefault(); diffHandler(); });
+      });
     });
 
     document.addEventListener('keydown', (e) => {
@@ -131,23 +128,6 @@ class Game {
         this.deselectLast();
       }
     });
-  }
-
-  _bindBtn(id, fn) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let fired = false;
-    const handler = (e) => {
-      if (fired) return;
-      fired = true;
-      setTimeout(() => { fired = false; }, 300);
-      e.preventDefault();
-      e.stopPropagation();
-      fn();
-    };
-    el.addEventListener("pointerup", handler);
-    el.addEventListener("click", handler);
-    el.addEventListener("touchend", handler);
   }
 
   _bindInput() {
@@ -200,7 +180,6 @@ class Game {
     };
 
     this.canvas.addEventListener('click', (e) => {
-      if (Date.now() - lastTouchTime < 500) return;
       if (this.state !== 'playing') return;
       const pos = getMousePos(e);
       handleTileTap(pos.x, pos.y);
@@ -212,7 +191,6 @@ class Game {
       if (this.state !== 'playing') return;
       const touch = e.touches[0];
       const rect = this.canvas.getBoundingClientRect();
-      lastTouchTime = Date.now();
       handleTileTap(touch.clientX - rect.left, touch.clientY - rect.top);
     }, { passive: false });
 
@@ -1280,11 +1258,11 @@ window.addEventListener('DOMContentLoaded', () => {
   MojAbble.loadDictionary().then(() => {
     btn.disabled = false;
     btn.textContent = 'Play';
-    window.mojabble = new Game();
+    try { window.mojabble = new Game(); } catch(e) { btn.textContent = "ERR: " + e.message; console.error(e); }
   }).catch(() => {
     btn.disabled = false;
     btn.textContent = 'Play';
-    window.mojabble = new Game();
+    try { window.mojabble = new Game(); } catch(e) { btn.textContent = "ERR: " + e.message; console.error(e); }
   });
 });
 

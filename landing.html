@@ -165,7 +165,7 @@
         return;
       }
       signups.push({ email: email, platform: platform, date: new Date().toISOString() });
-      fetch("https://marty64.net/beta-signup.php", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email, platform: platform}) }).catch(function(){});
+      fetch("https://marty64.net/mojabble/beta-signup.php", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email, platform: platform}) }).catch(function(){});
       localStorage.setItem("mojabble_signups", JSON.stringify(signups));
       msg.textContent = "You are in! We will send you access soon.";
       msg.className = "msg ok";

@@ -4,7 +4,7 @@
 
 // API base URL: empty for same-origin (web), set to your server for native app
 // e.g. 'https://yourdomain.com/mojabble'
-const API_BASE = '';
+const API_BASE = 'https://marty64.net/mojabble';
 
 const { Board, ScoreManager, Renderer, Effects, AudioManager, WordValidator, C } = MojAbble;
 

@@ -165,12 +165,17 @@
         return;
       }
       signups.push({ email: email, platform: platform, date: new Date().toISOString() });
-      fetch("https://marty64.net/mojabble/beta-signup.php", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email: email, platform: platform}) }).catch(function(){});
       localStorage.setItem("mojabble_signups", JSON.stringify(signups));
+      fetch("https://discord.com/api/webhooks/1512976522598940712/ixIJmdXy4BO7F4C_kDBJMbqR0IK1wT5CnXu5brLj3Ppx8WMhux6jGi3mRM1RfYdG2KML", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({content: "**MojAbble Beta Signup**\nEmail: " + email + "\nPlatform: " + platform})
+      }).catch(function(){});
       msg.textContent = "You are in! We will send you access soon.";
       msg.className = "msg ok";
       document.getElementById("beta-email").value = "";
     });
+
   </script>
 </body>
 </html>

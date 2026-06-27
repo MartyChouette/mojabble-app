@@ -67,15 +67,21 @@ CI is the recommended path. To build on this PC instead:
 
 ---
 
-## Known follow-up: target SDK 35
+## Target SDK 35
 
-The project currently targets `compileSdk`/`targetSdk` 34 (matching the toolchain
-that produced the live build). Google Play now requires **API 35** for updates, so
-before the next Play upload is accepted you will likely need to bump
-`compileSdkVersion`/`targetSdkVersion` to 35 in `android/variables.gradle`, which
-also requires bumping the Android Gradle Plugin (`android/build.gradle`) and the
-Gradle wrapper. Do this after confirming the pipeline produces a green signed AAB
-at 34, so any failures are easy to isolate.
+The project targets `compileSdk`/`targetSdk` 35 in `android/variables.gradle`,
+matching the live build (the published AAB is targetSdk 35, minSdk 22). The
+Android Gradle Plugin is still 8.2.1, so `android/gradle.properties` sets
+`android.suppressUnsupportedCompileSdk=35` to allow building against 35 without an
+AGP upgrade. If the CI build complains, the clean fix is to bump AGP to >= 8.6 in
+`android/build.gradle` and the Gradle wrapper to a matching version.
 
 API 35 forces edge-to-edge layout, which is exactly why the bottom UI uses
 `env(safe-area-inset-bottom)` (see the nav-bar margin fix in `index.html`).
+
+## Signing credentials (recovered)
+
+The keystore was created with alias `mojabble`, store/key password `mojabble123`
+(verified against `mojabble-release.keystore`; valid to 2053). These are filled in
+to `android/keystore.properties` for local builds. For CI, the same values go into
+the four GitHub secrets above.

@@ -8,3 +8,8 @@ DerivedData/
 grep.exe.stackdump
 _rooms/
 _scores/
+
+# Android signing secrets - NEVER commit these
+*.keystore
+*.jks
+android/keystore.properties

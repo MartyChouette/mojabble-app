@@ -260,8 +260,8 @@ class Board {
       maxLayer = Math.max(maxLayer, t.layer);
     }
 
-    this.boardWidth = (maxC - minC + 1) * (C.TILE_W + C.TILE_GAP) + maxLayer * C.LAYER_DX + C.TILE_W;
-    this.boardHeight = (maxR - minR + 1) * (C.TILE_H + C.TILE_GAP) + maxLayer * C.LAYER_DY + C.TILE_H;
+    this.boardWidth = (maxC - minC) * (C.TILE_W + C.TILE_GAP) + C.TILE_W + maxLayer * C.LAYER_DX;
+    this.boardHeight = (maxR - minR) * (C.TILE_H + C.TILE_GAP) + C.TILE_H + maxLayer * C.LAYER_DY;
     this.minCol = minC;
     this.minRow = minR;
     this.maxLayer = maxLayer;
@@ -269,28 +269,27 @@ class Board {
 
   centerOnCanvas(canvasW, canvasH) {
     // Auto-scale board to fit any screen size
-    const topUI = 60;
-    const bottomUI = 150;
-    const pad = 12;
+    const isMobile = canvasW < 768;
+    const topUI = isMobile ? 30 : 60;
+    const bottomUI = isMobile ? 60 : 150;
+    const pad = 0;
 
     const availW = canvasW - pad * 2;
     const availH = canvasH - topUI - bottomUI;
 
     const scaleX = availW / this.boardWidth;
     const scaleY = availH / this.boardHeight;
-    this.scale = Math.min(1, scaleX, scaleY);
+    const maxScale = isMobile ? 2.0 : 1;
+    this.scale = Math.min(maxScale, scaleX, scaleY);
 
     // Center board in available space (offsets are in pre-scale coords)
     const screenCenterX = canvasW / 2;
     const screenCenterY = topUI + availH / 2;
 
     this.offsetX = screenCenterX / this.scale - this.boardWidth / 2 - this.minCol * (C.TILE_W + C.TILE_GAP);
+    if (canvasW < 768) this.offsetX += 5 / this.scale;
     this.offsetY = screenCenterY / this.scale - this.boardHeight / 2 - this.minRow * (C.TILE_H + C.TILE_GAP) + this.maxLayer * C.LAYER_DY;
 
-    // Nudge pile slightly right on mobile
-    if (canvasW < 768) {
-      this.offsetX += 10 / this.scale;
-    }
   }
 
   // Check if a tile is free (can be selected)

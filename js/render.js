@@ -373,11 +373,15 @@ class Renderer {
 
   resize() {
     this.dpr = window.devicePixelRatio || 1;
-    this.canvas.width = window.innerWidth * this.dpr;
-    this.canvas.height = window.innerHeight * this.dpr;
+    let rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      rect = { width: window.innerWidth, height: window.innerHeight };
+    }
+    this.canvas.width = rect.width * this.dpr;
+    this.canvas.height = rect.height * this.dpr;
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = rect.width;
+    this.height = rect.height;
   }
 
   render(board, effects, dt) {

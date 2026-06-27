@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cp index.html docs.html words.txt www/ && cp -r js www/ && npx cap copy ios",
-    "sync": "npx cap sync ios"
+    "build": "cp index.html docs.html words.txt www/ && cp -r js www/",
+    "sync:ios": "npm run build && npx cap sync ios",
+    "sync:android": "npm run build && npx cap sync android",
+    "sync": "npm run sync:ios && npm run sync:android"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@capacitor/android": "^6.2.1",
     "@capacitor/cli": "^6.2.1",
     "@capacitor/core": "^6.2.1",
     "@capacitor/ios": "^6.2.1"

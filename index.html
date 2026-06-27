@@ -94,7 +94,7 @@
 
     #word-area {
       position: absolute;
-      bottom: 80px;
+      bottom: calc(80px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -151,7 +151,7 @@
 
     #buttons {
       position: absolute;
-      bottom: 24px;
+      bottom: calc(24px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -1201,7 +1201,7 @@
       #combo-display { top: 36px; font-size: 22px; }
 
       #word-area {
-        bottom: 220px;
+        bottom: calc(220px + env(safe-area-inset-bottom));
         gap: 4px;
         padding: 6px 12px;
         min-height: 50px;
@@ -1220,7 +1220,7 @@
       #word-area-placeholder { font-size: 12px; letter-spacing: 1px; }
 
       #buttons {
-        bottom: 10px;
+        bottom: calc(10px + env(safe-area-inset-bottom));
         gap: 6px;
         flex-wrap: wrap;
         justify-content: center;
@@ -1268,9 +1268,9 @@
       #tiles-left { top: 6px; left: 10px; }
       #tiles-left .count { font-size: 18px; }
       #combo-display { top: 6px; }
-      #word-area { bottom: 80px; min-height: 48px; padding: 4px 10px; }
+      #word-area { bottom: calc(80px + env(safe-area-inset-bottom)); min-height: 48px; padding: 4px 10px; }
       #word-area .letter-tile { width: 30px; height: 36px; font-size: 14px; }
-      #buttons { bottom: 6px; gap: 4px; }
+      #buttons { bottom: calc(6px + env(safe-area-inset-bottom)); gap: 4px; }
       #buttons button { padding: 5px 10px; font-size: 10px; min-height: 32px; }
     }
   </style>

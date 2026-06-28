@@ -8,4 +8,15 @@ DerivedData/
 grep.exe.stackdump
 _rooms/
 _scores/
+
+# Local release kit: keystores, certs, base64 secrets, built AABs/IPAs.
+# Lives on this machine only - NEVER commit. See RELEASE.md.
+_release_kit/
 *.keystore
+*.jks
+*.p12
+*.key
+*.csr
+*.mobileprovision
+*-base64.txt
+p12_base64.txt

@@ -38,18 +38,48 @@ Watch builds: `gh run list` / `gh run watch` or the Actions tab on GitHub.
 
 ---
 
-## To update the app (the normal flow)
+## Push an update - step by step
 
-1. `git pull` (Golden Rule).
-2. Edit the web game at the repo root: `index.html`, `js/*.js`, `words.txt`, `docs.html`.
-   The app is a Capacitor wrapper; these files are bundled into the build (there is
-   no live URL, so a web change requires a new build).
-3. Commit and push to `main` (a PR is nice but pushing to main is what triggers builds).
-4. **iOS:** nothing else - the build lands in TestFlight automatically. Open
-   TestFlight on the iPhone to test; submit for App Store review in App Store Connect.
-5. **Android:** open the **Build Android** run, download the **MojAbble-Android**
-   artifact (`app-release.aab`), then in Google Play Console create a new release
-   (Internal testing or Production) and upload it.
+### Step 1 - Pull, then make your change
+```powershell
+cd C:\Users\jerma\OneDrive\Desktop\mojabble
+git checkout main
+git pull
+```
+Edit the web game at the repo root: `index.html`, `js/*.js`, `words.txt`, `docs.html`.
+(It's a Capacitor wrapper - these files are bundled in, there is no live URL, so any
+change needs a new build.)
+
+### Step 2 - Commit and push (this triggers the builds)
+```powershell
+git add -A
+git commit -m "describe the change"
+git push origin main
+```
+That's it for building. Every push to `main` builds **both** platforms. You do not
+touch version numbers - CI sets them from the run number automatically.
+Watch it: `gh run watch` or the Actions tab on GitHub.
+
+### Step 3a - iOS: nothing to do
+The signed build uploads to **TestFlight** by itself. Open TestFlight on the iPhone
+to test. To ship publicly: App Store Connect -> select the build -> submit for review.
+
+### Step 3b - Android: download the AAB, upload to Play
+1. Download the freshly built bundle (or use the Actions tab -> Build Android run ->
+   Artifacts -> **MojAbble-Android**):
+   ```powershell
+   $rid = gh run list --workflow=build-android.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId'
+   gh run download $rid --name MojAbble-Android --dir _release_kit\builds\new
+   ```
+2. Google Play Console (play.google.com/console) -> **MojAbble** -> **Test and release**.
+3. Pick a track: **Internal testing** (fast, no review - do this first to verify) or
+   **Production** (public, Google reviews it).
+4. **Create new release** -> drag in `app-release.aab` (Play App Signing is already on;
+   just upload). Confirm the versionCode shown is higher than the last one.
+5. Add a release note, **Save** -> **Review release** -> **Start rollout**. Yellow
+   warnings (no deobfuscation file, etc.) are safe to ignore.
+6. Install from the testing opt-in link and check the change on a real phone. When
+   happy, promote that same build: release -> **Promote -> Production** (no rebuild).
 
 ---
 

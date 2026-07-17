@@ -21,6 +21,11 @@ class Game {
     this.removingTiles = [];
     this._statsTimer = null;
     this.difficulty = 'normal';
+    this.mode = 'solo'; // solo | daily | pp
+    this._dailyDate = null;
+    this._dailyScores = [];
+    this._pp = null;   // pass & play state
+    this._bp = null;   // board phase instance
 
     this._boardMode = 'global';
     this._globalScores = [];
@@ -70,6 +75,7 @@ class Game {
     this._fetchGlobalScores().then(() => {
       this._updateBoards('start');
     });
+    this._fetchDailyScores();
 
     // Also show local best
     const best = this._getScores();
@@ -81,8 +87,15 @@ class Game {
   }
 
   _bindUI() {
-    document.getElementById('btn-start').addEventListener('click', () => this.startGame());
-    document.getElementById('btn-restart').addEventListener('click', () => this.startGame());
+    document.getElementById('btn-start').addEventListener('click', () => { this.mode = 'solo'; this.startGame(); });
+    document.getElementById('btn-restart').addEventListener('click', () => this._restart());
+    document.getElementById('btn-daily').addEventListener('click', () => this.startDaily());
+    document.getElementById('btn-passplay').addEventListener('click', () => this._ppShowSetup());
+    document.getElementById('pp-start').addEventListener('click', () => this.startPassPlay());
+    document.getElementById('pp-back').addEventListener('click', () => {
+      document.getElementById('pp-setup').style.display = 'none';
+      document.getElementById('start-screen').style.display = 'flex';
+    });
     document.getElementById('btn-submit').addEventListener('click', () => this.submitWord());
     document.getElementById('btn-clear').addEventListener('click', () => this.clearSelection());
     document.getElementById('btn-shuffle').addEventListener('click', () => this.shuffleFreeTiles());
@@ -116,9 +129,11 @@ class Game {
         if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
         const mpVisible = document.getElementById('mp-lobby').style.display === 'flex'
           || document.getElementById('mp-waiting').style.display === 'flex'
-          || document.getElementById('match-result').style.display === 'flex';
+          || document.getElementById('match-result').style.display === 'flex'
+          || document.getElementById('pp-setup').style.display === 'flex'
+          || document.getElementById('board-phase').style.display === 'flex';
         if (mpVisible) return;
-        if (e.key === 'Enter' || e.key === ' ') this.startGame();
+        if (e.key === 'Enter' || e.key === ' ') this._restart();
         return;
       }
       if (e.key === 'Enter') this.submitWord();
@@ -199,25 +214,41 @@ class Game {
   }
 
   startGame(seed = null) {
+    // Networked VS uses its own state; don't inherit daily/pp mode
+    if (this._mp.active) this.mode = 'solo';
+
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('mp-waiting').style.display = 'none';
+    document.getElementById('pp-setup').style.display = 'none';
+    document.getElementById('board-phase').style.display = 'none';
 
     // Refresh start screen boards for next time
     this._boardMode = 'global';
     this._fetchGlobalScores().then(() => this._updateBoards('start'));
+    this._fetchDailyScores();
     const best = this._getScores();
     if (best.length > 0) {
       document.getElementById('start-best').textContent = `Personal best: ${best[0].s.toLocaleString()} (${best[0].d})`;
     }
 
-    this.board.init('classic', this.difficulty, seed);
+    // Daily plays a fixed difficulty so everyone gets the same board
+    this.board.init('classic', this.mode === 'daily' ? 'normal' : this.difficulty, seed);
     this.board.centerOnCanvas(this.renderer.width, this.renderer.height);
     this.score.reset();
     this.removingTiles = [];
     this.renderer.bgWord = '';
     this._sessionBestRare = null;
     this.state = 'playing';
+
+    // Mode-specific UI
+    document.getElementById('btn-giveup').textContent = this.mode === 'pp' ? 'Pass' : 'Give Up';
+    document.getElementById('score-display').style.display = this.mode === 'pp' ? 'none' : '';
+    document.getElementById('btn-shuffle').disabled = (this.mode === 'daily' || this.mode === 'pp');
+    document.getElementById('daily-badge').classList.toggle('visible', this.mode === 'daily');
+    if (this.mode === 'daily') document.getElementById('daily-date').textContent = this._dailyDate;
+    document.getElementById('pp-bar').classList.toggle('visible', this.mode === 'pp');
+    if (this.mode === 'pp') this._updatePpBar();
 
     // Show opponent bar if multiplayer
     const oppBar = document.getElementById('opponent-bar');
@@ -246,6 +277,11 @@ class Game {
 
     if (!WordValidator.isValid(word)) {
       this._invalidWord();
+      return;
+    }
+
+    if (this.mode === 'pp') {
+      this._ppSubmitWord(word);
       return;
     }
 
@@ -290,6 +326,7 @@ class Game {
 
   shuffleFreeTiles() {
     if (this.state !== 'playing') return;
+    if (this.mode === 'daily' || this.mode === 'pp') return;
 
     const SHUFFLE_COST = 50;
     this.board.shuffleFreeLetters();
@@ -318,6 +355,7 @@ class Game {
 
   swapTiles() {
     if (this.state !== 'playing') return;
+    if (this.mode === 'daily' || this.mode === 'pp') return;
     if (this.board.selectedTiles.length === 0) return;
 
     const PER_TILE_COST = 25;
@@ -351,6 +389,10 @@ class Game {
 
   giveUp() {
     if (this.state !== 'playing') return;
+    if (this.mode === 'pp') {
+      this._ppPass();
+      return;
+    }
     this.board.deselectAll();
     this._updateWordArea();
     this._gameOver();
@@ -568,7 +610,7 @@ class Game {
       bw: this.score.bestWord.toUpperCase(),
       bws: this.score.bestWordScore,
       mc: this.score.maxCombo,
-      d: this.difficulty,
+      d: this.mode === 'daily' ? 'normal' : this.difficulty,
       dt: new Date().toLocaleDateString()
     };
 
@@ -586,6 +628,10 @@ class Game {
       payload.rw = this._sessionBestRare.w;
       payload.rr = this._sessionBestRare.r;
     }
+    if (this.mode === 'daily') {
+      payload.m = 'daily';
+      payload.dd = this._dailyDate;
+    }
     this._submitToServer(payload);
 
     return { list, rank: list.findIndex(e => e === entry) };
@@ -600,9 +646,9 @@ class Game {
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       if (data && data.ok) {
-        // Refresh global boards after submission
-        this._fetchGlobalScores().then(() => {
-          if (this._boardMode === 'global') {
+        // Refresh global + daily boards after submission
+        Promise.all([this._fetchGlobalScores(), this._fetchDailyScores()]).then(() => {
+          if (this._boardMode === 'global' || this._boardMode === 'daily') {
             const prefix = this.state === 'gameover' ? 'go' : 'start';
             this._renderBoards(prefix, this._boardMode, Math.round(this.score.score));
           }
@@ -684,6 +730,9 @@ class Game {
     if (mode === 'global') {
       scores = this._globalScores || [];
       rare = this._globalRare || [];
+    } else if (mode === 'daily') {
+      scores = this._dailyScores || [];
+      rare = [];
     } else {
       scores = this._getScores();
       rare = this._getRareWords();
@@ -728,6 +777,7 @@ class Game {
 
   _mpBackToMenu() {
     this._mpCleanup();
+    this._resetModeUI();
     document.getElementById('match-result').style.display = 'none';
     document.getElementById('start-screen').style.display = 'flex';
   }
@@ -926,10 +976,10 @@ class Game {
     if (this._mp.pollTimer) clearInterval(this._mp.pollTimer);
     this._mp.pollTimer = null;
 
-    // Deduct remaining tile penalty
+    // Deduct remaining tile penalty (never let the final score go negative)
     const penalty = this.board.getRemainingPenalty();
     if (penalty > 0) {
-      this.score.score -= penalty;
+      this.score.score = Math.max(0, this.score.score - penalty);
     }
 
     // Send final score
@@ -985,6 +1035,9 @@ class Game {
     const myScore = Math.round(this.score.score);
     const oppScore = opponent.score;
     const myName = this._getPlayerName();
+
+    document.getElementById('match-you').querySelector('.mc-label').textContent = 'You';
+    document.getElementById('match-opp').querySelector('.mc-label').textContent = 'Opponent';
 
     const titleEl = document.getElementById('match-title');
     if (myScore > oppScore) {
@@ -1052,6 +1105,207 @@ class Game {
     this._mpCleanup();
   }
 
+  // ── Daily Challenge ─────────────────────────────────────────────
+
+  _dailySeedInfo() {
+    const now = new Date();
+    const date = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
+    // FNV-1a hash of the UTC date string -> everyone gets the same board
+    let h = 0x811c9dc5;
+    for (let i = 0; i < date.length; i++) {
+      h ^= date.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return { date, seed: h >>> 0 };
+  }
+
+  startDaily() {
+    const info = this._dailySeedInfo();
+    this.mode = 'daily';
+    this._dailyDate = info.date;
+    this.startGame(info.seed);
+  }
+
+  _fetchDailyScores() {
+    const info = this._dailySeedInfo();
+    return fetch(`${API_BASE}/scores.php?action=daily&date=${info.date}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) this._dailyScores = (data.scores || []).slice(0, 10);
+      })
+      .catch(() => {});
+  }
+
+  _restart() {
+    if (this.mode === 'daily') { this.startDaily(); return; }
+    if (this.mode === 'pp') this.mode = 'solo';
+    this.startGame();
+  }
+
+  // ── Pass & Play (shared pile, then word board) ──────────────────
+
+  _ppShowSetup() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('pp-setup').style.display = 'flex';
+    const n1 = document.getElementById('pp-name-1');
+    if (!n1.value) n1.value = document.getElementById('player-name').value.trim();
+  }
+
+  startPassPlay() {
+    const n1 = document.getElementById('pp-name-1').value.trim() || 'Player 1';
+    const n2 = document.getElementById('pp-name-2').value.trim() || 'Player 2';
+    this.mode = 'pp';
+    this._pp = {
+      players: [
+        { name: n1, words: [], pileScore: 0, boardScore: 0 },
+        { name: n2, words: [], pileScore: 0, boardScore: 0 },
+      ],
+      turn: 0,
+      passes: 0,
+    };
+    this.startGame();
+  }
+
+  _ppSubmitWord(word) {
+    const base = WordValidator.getWordScore(word);
+    const lengthBonus = WordValidator.getLengthBonus(word.length);
+    const total = base + lengthBonus;
+    const p = this._pp.players[this._pp.turn];
+
+    // Visual juice (reads selected tiles, so before removal)
+    this._wordSuccess({ baseScore: base, lengthBonus, combo: 1, comboMultiplier: 1, total });
+
+    // The word is kept whole for the board phase
+    p.words.push({ w: word.toUpperCase(), pts: total, used: false });
+    p.pileScore += total;
+
+    const removed = this.board.removeSelected();
+    for (let i = 0; i < removed.length; i++) {
+      removed[i].removeDelay = i * 0.08;
+    }
+    this.removingTiles.push(...removed);
+
+    this._pp.passes = 0;
+    this._updateWordArea();
+    this._updateUI();
+    this._updatePpBar();
+
+    setTimeout(() => {
+      if (this.state !== 'playing' || this.mode !== 'pp') return;
+      if (this._ppPileDone()) {
+        this._startBoardPhase();
+        return;
+      }
+      this._pp.turn = 1 - this._pp.turn;
+      this._updatePpBar();
+    }, 800);
+  }
+
+  _ppPass() {
+    this.board.deselectAll();
+    this._updateWordArea();
+    this._pp.passes++;
+    // Pile can't make it around the group -> board phase
+    if (this._pp.passes >= this._pp.players.length || this._ppPileDone()) {
+      this._startBoardPhase();
+      return;
+    }
+    this._pp.turn = 1 - this._pp.turn;
+    this._updatePpBar();
+  }
+
+  _ppPileDone() {
+    const remaining = this.board.tiles.filter(t => !t.removed && !t.removing);
+    if (remaining.length < C.MIN_WORD) return true;
+    return !this.board.canFormWord();
+  }
+
+  _updatePpBar() {
+    if (!this._pp) return;
+    for (let i = 0; i < 2; i++) {
+      const el = document.getElementById('pp-p' + i);
+      const p = this._pp.players[i];
+      el.querySelector('.pp-name').textContent = p.name;
+      el.querySelector('.pp-score').textContent = p.pileScore.toLocaleString();
+      el.classList.toggle('active', this._pp.turn === i);
+    }
+  }
+
+  _startBoardPhase() {
+    this.state = 'board';
+    this.board.deselectAll();
+    this._updateWordArea();
+    document.getElementById('pp-bar').classList.remove('visible');
+
+    // Clear leftover pile visuals so they don't bleed behind the board / result
+    document.getElementById('word-stats').classList.remove('visible');
+    this.renderer.setBgWord('');
+
+    // Nobody made a word: settle on pile scores alone
+    if (this._pp.players.every(p => p.words.length === 0)) {
+      this._ppShowResult();
+      return;
+    }
+
+    // The pile leader places the opening word (which earns no crossing bonus);
+    // the trailing player places into it and collects the crossings. A mild
+    // catch-up so board order isn't a flat advantage. Tune by playtest.
+    const [p0, p1] = this._pp.players;
+    const startTurn = p1.pileScore > p0.pileScore ? 1 : 0;
+    this._bp = new MojAbble.BoardPhase(this._pp.players, () => this._ppShowResult(), { startTurn });
+    this._bp.start();
+  }
+
+  _ppShowResult() {
+    this.state = 'gameover';
+    const [p0, p1] = this._pp.players;
+    const t0 = p0.pileScore + p0.boardScore;
+    const t1 = p1.pileScore + p1.boardScore;
+
+    const titleEl = document.getElementById('match-title');
+    const youCard = document.getElementById('match-you');
+    const oppCard = document.getElementById('match-opp');
+    youCard.querySelector('.mc-label').textContent = 'Player 1';
+    oppCard.querySelector('.mc-label').textContent = 'Player 2';
+
+    if (t0 > t1) {
+      titleEl.textContent = `${p0.name} Wins!`;
+      titleEl.style.color = '#ffd700';
+    } else if (t1 > t0) {
+      titleEl.textContent = `${p1.name} Wins!`;
+      titleEl.style.color = '#ffd700';
+    } else {
+      titleEl.textContent = 'Tie!';
+      titleEl.style.color = '#60a5fa';
+    }
+    youCard.classList.toggle('winner', t0 >= t1);
+    oppCard.classList.toggle('winner', t1 >= t0);
+
+    const stats = (p) => {
+      const placed = p.words.filter(w => w.used).length;
+      return `Pile: ${p.pileScore.toLocaleString()}<br>Board: ${p.boardScore.toLocaleString()}<br>Words placed: ${placed}/${p.words.length}`;
+    };
+    document.getElementById('match-you-name').textContent = p0.name;
+    document.getElementById('match-you-score').textContent = t0.toLocaleString();
+    document.getElementById('match-you-stats').innerHTML = stats(p0);
+    document.getElementById('match-opp-name').textContent = p1.name;
+    document.getElementById('match-opp-score').textContent = t1.toLocaleString();
+    document.getElementById('match-opp-stats').innerHTML = stats(p1);
+
+    document.getElementById('match-result').style.display = 'flex';
+  }
+
+  _resetModeUI() {
+    this.mode = 'solo';
+    this._pp = null;
+    this._bp = null;
+    document.getElementById('btn-giveup').textContent = 'Give Up';
+    document.getElementById('score-display').style.display = '';
+    document.getElementById('pp-bar').classList.remove('visible');
+    document.getElementById('daily-badge').classList.remove('visible');
+    document.getElementById('board-phase').style.display = 'none';
+  }
+
   _boardCleared() {
     this.effects.celebrate(this.renderer.width / 2, this.renderer.height / 2);
     this.audio.playCelebration();
@@ -1085,10 +1339,10 @@ class Game {
   }
 
   _showSoloGameOver() {
-    // Deduct remaining tile penalty
+    // Deduct remaining tile penalty (never let the final score go negative)
     const penalty = this.board.getRemainingPenalty();
     if (penalty > 0) {
-      this.score.score -= penalty;
+      this.score.score = Math.max(0, this.score.score - penalty);
     }
 
     const go = document.getElementById('game-over');
@@ -1137,7 +1391,7 @@ class Game {
 
     placeholder.style.display = 'none';
     submitBtn.disabled = selected.length < C.MIN_WORD;
-    swapBtn.disabled = false;
+    swapBtn.disabled = (this.mode === 'daily' || this.mode === 'pp');
 
     for (let i = 0; i < selected.length; i++) {
       const tile = selected[i];

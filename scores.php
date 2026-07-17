@@ -7,8 +7,10 @@
  * No database, no dependencies, no accounts.
  *
  * API:
- *   GET  ?action=scores  -> { scores: [...], rare: [...] }
- *   POST ?action=submit   -> { name, score, ... } -> { ok, rank }
+ *   GET  ?action=scores              -> { scores: [...], rare: [...] }
+ *   GET  ?action=daily&date=Y-m-d    -> { scores: [...] } for that day's seeded board
+ *   POST ?action=submit              -> { name, score, ... } -> { ok, rank }
+ *                                       (with m=daily & dd=Y-m-d, also stored on that day's board)
  */
 
 header('Content-Type: application/json');
@@ -89,6 +91,17 @@ switch ($action) {
         echo json_encode(['scores' => $scores, 'rare' => $rare]);
         break;
 
+    case 'daily':
+        $date = $_GET['date'] ?? '';
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid date']);
+            exit;
+        }
+        $daily = readJSON("$dir/daily_$date.json") ?? [];
+        echo json_encode(['scores' => $daily]);
+        break;
+
     case 'submit':
         $input = json_decode(file_get_contents('php://input'), true);
         if (!$input) {
@@ -141,6 +154,18 @@ switch ($action) {
             'dt' => date('Y-m-d'),
             'ts' => time()
         ];
+
+        // Daily challenge entry: also store on that day's board
+        $mode = $input['m'] ?? '';
+        $dd = $input['dd'] ?? '';
+        if ($mode === 'daily' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dd)) {
+            $dailyFile = "$dir/daily_$dd.json";
+            $daily = readJSON($dailyFile) ?? [];
+            $daily[] = $entry;
+            usort($daily, function($a, $b) { return $b['s'] - $a['s']; });
+            $daily = array_slice($daily, 0, 50);
+            writeJSON($dailyFile, $daily);
+        }
 
         // Insert into scores list, keep top 50
         $scores = readJSON($scoresFile) ?? [];
